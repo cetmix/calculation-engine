@@ -52,17 +52,23 @@ class BaseCalculation(models.Model):
     )
     active = fields.Boolean(default=True)
 
-    @api.constrains("reference")
-    def _check_reference_format(self):
-        for record in self:
-            if record.reference:
-                if not re.match(r"^[A-Z0-9_]+$", record.reference):
-                    raise ValidationError(
-                        _(
-                            "Reference must contain only capital letters, "
-                            "numbers, and underscores."
-                        )
-                    )
+    @api.model
+    def create(self, vals):
+        reference = vals.get("reference", False)
+        if reference and not re.match(r"^[A-Z0-9_]+$", reference):
+            vals.update({"reference": self._auto_correct_reference(reference)})
+        return super().create(vals)
+
+    def write(self, vals):
+        reference = vals.get("reference", False)
+        if reference and not re.match(r"^[A-Z0-9_]+$", reference):
+            vals.update({"reference": self._auto_correct_reference(reference)})
+        return super().write(vals)
+
+    def _auto_correct_reference(self, reference):
+        """Auto-corrects the reference to match the specified pattern."""
+        corrected = re.sub(r"[^A-Z0-9_]", "", reference.replace(" ", "_").upper())
+        return corrected
 
     def _get_eval_context(self, records=None):
         """Prepare the context used when evaluating python code.
