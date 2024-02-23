@@ -3,7 +3,7 @@
 
 import re
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 from odoo.tools.safe_eval import test_python_expr
 
@@ -63,24 +63,30 @@ class BaseCalculationBlock(models.Model):
         for block in self:
             block.calculation_count = len(block.calculation_ids)
 
-    @api.constrains("reference")
-    def _check_reference_format(self):
-        for record in self:
-            if record.reference:
-                if not re.match(r"^[A-Z0-9_]+$", record.reference):
-                    raise ValidationError(
-                        _(
-                            "Reference must contain only capital letters, "
-                            "numbers, and underscores."
-                        )
-                    )
-
     @api.constrains("expression")
     def _check_python_expression(self):
         for record in self.sudo().filtered("expression"):
             msg = test_python_expr(expr=record.expression.strip(), mode="exec")
             if msg:
                 raise ValidationError(msg)
+
+    @api.model
+    def create(self, vals):
+        reference = vals.get("reference", False)
+        if reference and not re.match(r"^[A-Z0-9_]+$", reference):
+            vals.update({"reference": self._auto_correct_reference(reference)})
+        return super().create(vals)
+
+    def write(self, vals):
+        reference = vals.get("reference", False)
+        if reference and not re.match(r"^[A-Z0-9_]+$", reference):
+            vals.update({"reference": self._auto_correct_reference(reference)})
+        return super().write(vals)
+
+    def _auto_correct_reference(self, reference):
+        """Auto-corrects the reference to match the specified pattern."""
+        corrected = re.sub(r"[^A-Z0-9_]", "", reference.replace(" ", "_").upper())
+        return corrected
 
     def action_view_related_calculations(self):
         self.ensure_one()
