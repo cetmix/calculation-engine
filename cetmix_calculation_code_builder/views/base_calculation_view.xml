@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="base_calculation_code_builder_view_form" model="ir.ui.view">
+        <field name="name">base.calculation.code.builder.view.form</field>
+        <field name="model">base.calculation</field>
+        <field name="inherit_id" ref="cetmix_calculation.base_calculation_view_form" />
+        <field name="arch" type="xml">
+            <xpath
+                expr="//field[@name='variable_line_ids']/tree/field[@name='variable_id']"
+                position="after"
+            >
+                <field name="is_digit" />
+            </xpath>
+            <xpath
+                expr="//field[@name='variable_line_ids']/form/sheet/group/field[@name='variable_id']"
+                position="after"
+            >
+                <field name="is_digit" />
+            </xpath>
+            <xpath
+                expr="//field[@name='line_ids']/tree/field[@name='condition']"
+                position="after"
+            >
+                <field name="expression_ids" invisible="1" />
+                <button
+                    type="object"
+                    name="action_show_expression_builder_condition"
+                    icon="fa-ellipsis-h"
+                    width="0.1"
+                    title="Build Condition with Expression builder"
+                />
+            </xpath>
+
+        </field>
+    </record>
+</odoo>

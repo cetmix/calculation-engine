@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+
+    <!-- Variables -->
+    <record id="base_calculation_variable_age" model="base.calculation.variable">
+        <field name="name">age</field>
+        <field name="is_digit">True</field>
+    </record>
+    <record id="base_calculation_variable_luck" model="base.calculation.variable">
+        <field name="name">luck</field>
+    </record>
+    <record id="base_calculation_variable_spirits" model="base.calculation.variable">
+        <field name="name">spirits</field>
+    </record>
+    <record id="base_calculation_variable_party" model="base.calculation.variable">
+        <field name="name">party</field>
+    </record>
+    <record id="base_calculation_variable_because_of" model="base.calculation.variable">
+        <field name="name">because_of</field>
+    </record>
+
+    <!-- Calculation -->
+    <record
+        id="base_calculation_calculation_built_with_builder"
+        model="base.calculation"
+    >
+        <field name="name">Calculation built with Builder</field>
+        <field name="model_id" ref="base.model_res_partner" />
+    </record>
+
+    <!-- Calculation Block -->
+    <record id="base_calculation_calculation_block" model="base.calculation.block">
+        <field name="name">Block 1</field>
+        <field name="use_expressions">True</field>
+    </record>
+
+    <!-- Calculation Line -->
+    <record id="base_calculation_line_1" model="base.calculation.line">
+        <field
+            name="calculation_id"
+            ref="cetmix_calculation_code_builder.base_calculation_calculation_built_with_builder"
+        />
+        <field
+            name="block_id"
+            ref="cetmix_calculation_code_builder.base_calculation_calculation_block"
+        />
+    </record>
+
+    <!-- Calculation Variable Lines -->
+    <record
+        id="base_calculation_variable_age_line"
+        model="base.calculation.variable.line"
+    >
+        <field
+            name="variable_id"
+            ref="cetmix_calculation_code_builder.base_calculation_variable_age"
+        />
+        <field
+            name="calculation_id"
+            ref="cetmix_calculation_code_builder.base_calculation_calculation_built_with_builder"
+        />
+        <field name="value">23</field>
+    </record>
+    <record
+        id="base_calculation_variable_luck_line"
+        model="base.calculation.variable.line"
+    >
+        <field
+            name="variable_id"
+            ref="cetmix_calculation_code_builder.base_calculation_variable_luck"
+        />
+        <field
+            name="calculation_id"
+            ref="cetmix_calculation_code_builder.base_calculation_calculation_built_with_builder"
+        />
+        <field name="value">some</field>
+    </record>
+    <record
+        id="base_calculation_variable_spirits_line"
+        model="base.calculation.variable.line"
+    >
+        <field
+            name="variable_id"
+            ref="cetmix_calculation_code_builder.base_calculation_variable_spirits"
+        />
+        <field
+            name="calculation_id"
+            ref="cetmix_calculation_code_builder.base_calculation_calculation_built_with_builder"
+        />
+        <field name="value">schnapps</field>
+    </record>
+
+    <!-- Calculation Block Expression -->
+    <record id="base_calculation_expression_1" model="base.calculation.expression">
+        <field
+            name="calculation_block_id"
+            ref="cetmix_calculation_code_builder.base_calculation_calculation_block"
+        />
+        <field
+            name="variable_ids"
+            eval="[(6, 0, [ref('cetmix_calculation_code_builder.base_calculation_variable_party')])]"
+        />
+    </record>
+
+    <!-- Calculation Block Expression Rules -->
+    <record
+        id="base_calculation_expression_line_1"
+        model="base.calculation.expression.rule"
+    >
+        <field
+            name="expression_id"
+            ref="cetmix_calculation_code_builder.base_calculation_expression_1"
+        />
+    </record>
+    <record
+        id="base_calculation_expression_line_2"
+        model="base.calculation.expression.rule"
+    >
+        <field
+            name="expression_id"
+            ref="cetmix_calculation_code_builder.base_calculation_expression_1"
+        />
+    </record>
+
+    <!-- Calculation Block Expression Conditions -->
+    <record
+        id="base_calculation_expression_condition_1_line_1"
+        model="base.calculation.expression.condition"
+    >
+        <field
+            name="variable_id"
+            ref="cetmix_calculation_code_builder.base_calculation_variable_age"
+        />
+        <field name="condition">></field>
+        <field name="value">21</field>
+        <field
+            name="rule_id"
+            ref="cetmix_calculation_code_builder.base_calculation_expression_line_1"
+        />
+    </record>
+    <record
+        id="base_calculation_expression_condition_2_line_1"
+        model="base.calculation.expression.condition"
+    >
+        <field
+            name="variable_id"
+            ref="cetmix_calculation_code_builder.base_calculation_variable_spirits"
+        />
+        <field name="condition">in</field>
+        <field name="value">whiskey, schnapps, vodka, grappa</field>
+        <field
+            name="rule_id"
+            ref="cetmix_calculation_code_builder.base_calculation_expression_line_1"
+        />
+    </record>
+    <record
+        id="base_calculation_expression_condition_1_line_2"
+        model="base.calculation.expression.condition"
+    >
+        <field
+            name="variable_id"
+            ref="cetmix_calculation_code_builder.base_calculation_variable_age"
+        />
+        <field name="condition">>=</field>
+        <field name="value">18</field>
+        <field
+            name="rule_id"
+            ref="cetmix_calculation_code_builder.base_calculation_expression_line_2"
+        />
+    </record>
+    <record
+        id="base_calculation_expression_condition_2_line_2"
+        model="base.calculation.expression.condition"
+    >
+        <field
+            name="variable_id"
+            ref="cetmix_calculation_code_builder.base_calculation_variable_luck"
+        />
+        <field name="condition">like</field>
+        <field name="value">good</field>
+        <field
+            name="rule_id"
+            ref="cetmix_calculation_code_builder.base_calculation_expression_line_2"
+        />
+    </record>
+
+    <!-- Calculation Block Expression Variable Lines -->
+    <record
+        id="base_calculation_expression_variable_line_1"
+        model="base.calculation.expression.variable.line"
+    >
+        <field
+            name="variable_id"
+            ref="cetmix_calculation_code_builder.base_calculation_variable_party"
+        />
+        <field name="value">hard</field>
+        <field
+            name="expression_id"
+            ref="cetmix_calculation_code_builder.base_calculation_expression_1"
+        />
+    </record>
+    <record
+        id="base_calculation_expression_variable_line_2"
+        model="base.calculation.expression.variable.line"
+    >
+        <field
+            name="variable_id"
+            ref="cetmix_calculation_code_builder.base_calculation_variable_because_of"
+        />
+        <field name="value">spirits</field>
+        <field
+            name="expression_id"
+            ref="cetmix_calculation_code_builder.base_calculation_expression_1"
+        />
+    </record>
+
+</odoo>

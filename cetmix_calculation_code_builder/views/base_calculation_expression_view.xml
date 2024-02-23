@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="base_calculation_expression_view_tree" model="ir.ui.view">
+        <field name="name">base.calculation.expression.tree</field>
+        <field name="model">base.calculation.expression</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="order" widget="handle" />
+                <field name="name" decoration-bf="True" />
+            </tree>
+        </field>
+    </record>
+    <record id="base_calculation_expression_view_form" model="ir.ui.view">
+        <field name="name">base.calculation.expression.form</field>
+        <field name="model">base.calculation.expression</field>
+        <field name="arch" type="xml">
+            <form string="Base Calculation Expression">
+                <sheet>
+                    <notebook>
+                        <page string="Conditions">
+                            <field name="rule_ids">
+                                <tree>
+                                    <field name="name" />
+                                </tree>
+                            </field>
+                            <group name="help_conditions" string="Search conditions">
+                                <p colspan="2">
+                                    Conditions inside a filter are joined using '
+                                    <b>OR</b>
+                                    ' (e.g '
+                                    <b>
+                                        Condition #1 OR
+                                        Condition #2 .. OR Condition X
+                                    </b>
+                                    ')
+                                </p>
+                                <p colspan="2">
+                                    Expressions within a filter condition are joined
+                                    using '
+                                    <b>AND</b>
+                                    ' (e.g '
+                                    <b>
+                                        Expression #1 AND Expression #2 .. AND
+                                        Expression X
+                                    </b>
+                                    ')
+                                </p>
+                            </group>
+                        </page>
+                        <page name="Variables">
+                            <field name="variable_line_ids" />
+                        </page>
+                    </notebook>
+                    <group>
+                        <field
+                            name="variable_ids"
+                            widget="many2many_tags"
+                            options="{'no_create_edit': True}"
+                        />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="base_calculation_line_expression_view_form" model="ir.ui.view">
+        <field name="name">base.calculation.line.expression.form</field>
+        <field name="model">base.calculation.expression</field>
+        <field name="priority">1000</field>
+        <field name="arch" type="xml">
+            <form string="Base Calculation Expression">
+                <sheet>
+                    <field name="calculation_line_id" invisible="1" />
+                    <notebook>
+                        <page string="Conditions">
+                            <field name="rule_ids">
+                                <tree>
+                                    <field name="name" />
+                                </tree>
+                            </field>
+                            <group name="help_conditions" string="Search conditions">
+                                <p colspan="2">
+                                    Conditions inside a filter are joined using '
+                                    <b>OR</b>
+                                    ' (e.g '
+                                    <b>
+                                        Condition #1 OR
+                                        Condition #2 .. OR Condition X
+                                    </b>
+                                    ')
+                                </p>
+                                <p colspan="2">
+                                    Expressions within a filter condition are joined
+                                    using '
+                                    <b>AND</b>
+                                    ' (e.g '
+                                    <b>
+                                        Expression #1 AND Expression #2 .. AND
+                                        Expression X
+                                    </b>
+                                    ')
+                                </p>
+                            </group>
+                        </page>
+                    </notebook>
+                    <footer class="oe_edit_only">
+                        <button
+                            string="Confirm"
+                            special="save"
+                            data-hotkey="v"
+                            class="oe_highlight"
+                        />
+                        <button string="Discard" special="cancel" data-hotkey="z" />
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="base_calculation_expression_rule_view_form" model="ir.ui.view">
+        <field name="name">base.calculation.expression.rule.form</field>
+        <field name="model">base.calculation.expression.rule</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <field name="condition_ids">
+                        <tree>
+                            <field name="name" />
+                        </tree>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="base_calculation_expression_conditions_view_form" model="ir.ui.view">
+        <field name="name">base.calculation.expression.condition.form</field>
+        <field name="model">base.calculation.expression.condition</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="o_row">
+                        <label
+                            for="variable_id"
+                            string="If"
+                            style="margin-right: 1rem;"
+                        />
+                        <field name="variable_id" nolabel="1" />
+                        <label
+                            for="is_digit"
+                            string="Digit"
+                            style="margin-right: 1rem;"
+                        />
+                        <field name="is_digit" nolabel="1" />
+                        <field name="condition" nolabel="1" />
+                        <field name="value" nolabel="1" />
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="base_calculation_expression_variable_line_view_tree" model="ir.ui.view">
+        <field name="name">base.calculation.expression.variable.line.view.tree</field>
+        <field name="model">base.calculation.expression.variable.line</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="variable_id" />
+                <field name="is_digit" />
+                <field name="value" />
+                <field name="expression_id" invisible="1" />
+            </tree>
+        </field>
+    </record>
+</odoo>
