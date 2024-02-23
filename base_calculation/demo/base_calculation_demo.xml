@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo noupdate="1">
+    <record id="calculation_res_partner_bob" model="res.partner">
+        <field name="name">Bob</field>
+        <field name="email">bob@example.com</field>
+    </record>
+
+    <record id="calculation_res_partner_mike" model="res.partner">
+        <field name="name">Mike</field>
+        <field name="email">mike@example.com</field>
+    </record>
+
+    <record model="product.product" id="demo_product_meme_design">
+        <field name="name">Meme design</field>
+        <field name="detailed_type">product</field>
+        <field name="standard_price">100.0</field>
+        <field name="uom_id" ref="uom.product_uom_unit" />
+        <field name="uom_po_id" ref="uom.product_uom_unit" />
+    </record>
+
+    <record model="product.product" id="demo_product_meme_development">
+        <field name="name">Meme development</field>
+        <field name="detailed_type">service</field>
+        <field name="standard_price">150.0</field>
+        <field name="uom_id" ref="uom.product_uom_unit" />
+        <field name="uom_po_id" ref="uom.product_uom_unit" />
+    </record>
+
+    <record model="product.product" id="demo_product_such_much_meme">
+        <field name="name">Such Much Meme</field>
+        <field name="detailed_type">product</field>
+        <field name="standard_price">200.0</field>
+        <field name="uom_id" ref="uom.product_uom_unit" />
+        <field name="uom_po_id" ref="uom.product_uom_unit" />
+    </record>
+
+    <record id="calculation_purchase_order" model="purchase.order">
+        <field name="partner_id" ref="base_calculation.calculation_res_partner_bob" />
+        <field name="user_id" eval="False" />
+    </record>
+
+    <record
+        id="calculation_purchase_order_line_meme_design"
+        model="purchase.order.line"
+    >
+        <field name="product_id" ref="base_calculation.demo_product_meme_design" />
+        <field
+            name="date_planned"
+            eval="(datetime.now()).strftime('%Y-%m-%d %H:%M:%S')"
+        />
+        <field name="product_qty">10</field>
+        <field name="product_uom" ref="uom.product_uom_unit" />
+        <field name="order_id" ref="base_calculation.calculation_purchase_order" />
+    </record>
+
+    <record
+        id="calculation_purchase_order_line_such_much_meme"
+        model="purchase.order.line"
+    >
+        <field name="product_id" ref="base_calculation.demo_product_such_much_meme" />
+        <field
+            name="date_planned"
+            eval="(datetime.now()).strftime('%Y-%m-%d %H:%M:%S')"
+        />
+        <field name="product_qty">50</field>
+        <field name="product_uom" ref="uom.product_uom_unit" />
+        <field name="order_id" ref="base_calculation.calculation_purchase_order" />
+    </record>
+
+</odoo>
