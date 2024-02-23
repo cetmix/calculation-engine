@@ -2,17 +2,16 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0).
 
 import re
-from copy import deepcopy
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
-from odoo.tools.safe_eval import safe_eval, test_python_expr
+from odoo.tools.safe_eval import test_python_expr
 
 
 class BaseCalculationBlock(models.Model):
     _name = "base.calculation.block"
     _description = "Base Calculation Block"
-    _order = "sequence"
+    _rec_name = "name"
 
     DEFAULT_PYTHON_CODE = """# Available variables:
     #  - env: Odoo Environment on which the calculation is triggered
@@ -30,7 +29,7 @@ class BaseCalculationBlock(models.Model):
     # To return a RESULT, assign: RESULT["key_name"] = ...
     # Ex: RESULT["final_price"] = SALE_TOTAL * discount_multiplier\n\n\n\n"""
 
-    sequence = fields.Integer(default=10)
+    name = fields.Char(required=True)
     reference = fields.Char(
         required=True,
         help="This is a unique reference of the Calculation Block "
@@ -43,14 +42,26 @@ class BaseCalculationBlock(models.Model):
         help="Python expression. Must assign a value to the "
         "built-in RESULT variable.",
     )
-    condition = fields.Char(
-        help="This field allows you to specify a condition as "
-        "python code that determines in which case the expression "
-        "will be executed. Please enter the condition using "
-        "the appropriate syntax. Example: "
-        "SALE_TOTAL > 10000 and CITY_NAME.upper() == 'NEW YORK'"
+    line_ids = fields.One2many(
+        string="Lines",
+        comodel_name="base.calculation.line",
+        inverse_name="block_id",
+        auto_join=True,
     )
-    calculation_id = fields.Many2one("base.calculation", ondelete="cascade")
+    calculation_ids = fields.Many2many(
+        "base.calculation", compute="_compute_calculation_ids"
+    )
+    calculation_count = fields.Integer(compute="_compute_calculation_count")
+
+    @api.depends("line_ids")
+    def _compute_calculation_ids(self):
+        for block in self:
+            block.calculation_ids = [(6, 0, block.line_ids.calculation_id.ids)]
+
+    @api.depends("calculation_ids")
+    def _compute_calculation_count(self):
+        for block in self:
+            block.calculation_count = len(block.calculation_ids)
 
     @api.constrains("reference")
     def _check_reference_format(self):
@@ -64,13 +75,6 @@ class BaseCalculationBlock(models.Model):
                         )
                     )
 
-    @api.constrains("condition")
-    def _check_python_condition(self):
-        for record in self.sudo().filtered("condition"):
-            msg = test_python_expr(expr=record.condition.strip(), mode="exec")
-            if msg:
-                raise ValidationError(msg)
-
     @api.constrains("expression")
     def _check_python_expression(self):
         for record in self.sudo().filtered("expression"):
@@ -78,30 +82,13 @@ class BaseCalculationBlock(models.Model):
             if msg:
                 raise ValidationError(msg)
 
-    def calculate_block(self, variables):
-        """
-        Evaluate condition and expression within calculation blocks
-        based on the provided variables.
-
-        Args:
-            variables (dict): Dictionary containing variables to be used in evaluation.
-
-        Returns:
-            dict: Dictionary containing the results obtained
-            from evaluating expressions.
-        """
-        result = dict()
-        for calculation_block in self:
-            # Check if condition is satisfied
-            if calculation_block.condition:
-                if safe_eval(calculation_block.condition, variables):
-                    # Evaluate expression
-                    safe_eval(calculation_block.expression, variables, mode="exec")
-                    result_dict = deepcopy(variables.get("RESULT", {}))
-                    result.update(result_dict)
-            else:
-                # Evaluate expression
-                safe_eval(calculation_block.expression, variables, mode="exec")
-                result_dict = deepcopy(variables.get("RESULT", {}))
-                result.update(result_dict)
-        return result
+    def action_view_related_calculations(self):
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "name": "Calculations",
+            "view_mode": "tree,form",
+            "res_model": "base.calculation",
+            "domain": [("id", "in", self.calculation_ids.ids)],
+            "context": {"default_block_id": self.id},
+        }

@@ -3,8 +3,10 @@ It works similar to Automated Actions however the main difference is that it ret
 
 Calculation 
 
-Each calculation block has the following settings:
+Each calculation consist of Calculation Lines which defines what will happen when calculation process will reach it.
+
+Each Calculation Line has the following settings:
 
 - Sequence. Positional order of the block in the calculation chain. Calculation blocks are processed in order from the lowest to the highest sequence number.
-- Condition. A Python expression which describes when the block is involved in the calculation chain.
-- Action. A Python expression that performs the evaluations within the block.
+- Condition. Python expression that must be complied to run this line.
+- Calculation Block that will be evaluated.

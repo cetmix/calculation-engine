@@ -1,1 +1,0 @@
-Known limitations and roadmap. Eg "Doesn't work with Odoo EE barcode App" or "TODO: add kanban view stats"

@@ -43,15 +43,11 @@
                         </group>
                     </group>
                     <notebook>
-                        <page string="Blocks">
-                            <field name="block_ids" widget="one2many" nolabel="1">
-                                <tree>
+                        <page string="Lines">
+                            <field name="line_ids" widget="one2many" nolabel="1">
+                                <tree editable="bottom">
                                     <field name="sequence" widget="handle" />
-                                    <field
-                                        name="reference"
-                                        placeholder="e.g. APPLY_DISCOUNT"
-                                    />
-                                    <field name="expression" />
+                                    <field name="block_id" />
                                     <field
                                         name="condition"
                                         placeholder="e.g. SALE_TOTAL > 10000 and CITY_NAME.upper() == 'NEW YORK'"
@@ -61,16 +57,8 @@
                                 <form>
                                     <sheet>
                                         <group>
-                                            <field
-                                                name="reference"
-                                                placeholder="e.g. APPLY_DISCOUNT"
-                                            />
                                             <field name="sequence" invisible="1" />
-                                            <field
-                                                name="expression"
-                                                widget="ace"
-                                                options="{'mode': 'python'}"
-                                            />
+                                            <field name="block_id" />
                                             <field
                                                 name="condition"
                                                 placeholder="e.g. SALE_TOTAL > 10000 and CITY_NAME.upper() == 'NEW YORK'"
