@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="base_calculation_view_tree" model="ir.ui.view">
+        <field name="name">base.calculation.view.tree</field>
+        <field name="model">base.calculation</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" />
+                <field name="reference" />
+                <field name="model_id" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="base_calculation_view_form" model="ir.ui.view">
+        <field name="name">base.calculation.view.form</field>
+        <field name="model">base.calculation</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            class="oe_stat_button"
+                            name="%(base_calculation.base_calculation_test_action)d"
+                            icon="fa-calculator"
+                            string="Test Calculation"
+                            type="action"
+                            target="new"
+                        />
+                    </div>
+                    <div class="oe_title">
+                      <label for="name" string="Calculation Name" />
+                      <h1><field
+                                name="name"
+                                placeholder="e.g. Compute Sales Order Discount"
+                            /></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="reference" placeholder="e.g. SALES_DISCOUNT" />
+                            <field name="model_id" />
+                            <field name="active" widget="boolean_toggle" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Blocks">
+                            <field name="block_ids" widget="one2many" nolabel="1">
+                                <tree>
+                                    <field name="sequence" widget="handle" />
+                                    <field
+                                        name="reference"
+                                        placeholder="e.g. APPLY_DISCOUNT"
+                                    />
+                                    <field name="expression" />
+                                    <field
+                                        name="condition"
+                                        placeholder="e.g. SALE_TOTAL > 10000 and CITY_NAME.upper() == 'NEW YORK'"
+                                    />
+                                    <field name="calculation_id" invisible="1" />
+                                </tree>
+                                <form>
+                                    <sheet>
+                                        <group>
+                                            <field
+                                                name="reference"
+                                                placeholder="e.g. APPLY_DISCOUNT"
+                                            />
+                                            <field name="sequence" invisible="1" />
+                                            <field
+                                                name="expression"
+                                                widget="ace"
+                                                options="{'mode': 'python'}"
+                                            />
+                                            <field
+                                                name="condition"
+                                                placeholder="e.g. SALE_TOTAL > 10000 and CITY_NAME.upper() == 'NEW YORK'"
+                                            />
+                                            <field
+                                                name="calculation_id"
+                                                invisible="1"
+                                            />
+                                        </group>
+                                    </sheet>
+                                </form>
+                            </field>
+                        </page>
+                        <page string="Variables">
+                            <field name="variable_ids" widget="one2many" nolabel="1">
+                                <tree editable="bottom">
+                                    <field name="variable_id" />
+                                    <field name="value" />
+                                    <field name="calculation_id" invisible="1" />
+                                </tree>
+                                <form>
+                                    <sheet>
+                                        <group>
+                                            <field name="variable_id" />
+                                            <field name="value" />
+                                            <field
+                                                name="calculation_id"
+                                                invisible="1"
+                                            />
+                                        </group>
+                                    </sheet>
+                                </form>
+                            </field>
+                        </page>
+                        <page string="Help" name="help_info">
+                            <div style="margin-top: 4px;">
+                                <h3>Help with Python expressions</h3>
+                                <p
+                                >Various fields may use Python code or Python expressions. The following variables can be used:</p>
+                                <ul>
+                                    <li><code
+                                        >env</code>: Odoo Environment on which the calculation is triggered</li>
+                                    <li><code
+                                        >model</code>: Odoo Model of the record on which the calulation is triggered; is a void recordset</li>
+                                    <li><code
+                                        >record</code>: record on which the calculation is triggered; may be be void</li>
+                                    <li><code
+                                        >records</code>: recordset of all records on which the calculation is triggered in multi mode; may be void</li>
+                                    <li><code>time</code>, <code>datetime</code>, <code
+                                        >dateutil</code>, <code
+                                        >timezone</code>: useful Python libraries</li>
+                                    <li><code
+                                        >log(message, level='info')</code>: logging function to record debug information in <code
+                                        >ir.logging</code> table</li>
+                                    <li><code
+                                        >UserError</code>: Warning Exception to use with <code
+                                        >raise</code></li>
+                                    <li><code
+                                        >Command</code>: x2Many commands namespace</li>
+                                    <li>To return a RESULT, assign: <code
+                                        >RESULT["key_name"] = ...</code></li>
+                                </ul>
+                                <div>
+                                    <p>Example of Python code</p>
+                                    <code style='white-space: pre-wrap'>
+                                    discount_multiplier = (100-DISCOUNT_PERCENT)/100<br
+                                        />
+                                    RESULT["final_price"] = SALE_TOTAL * discount_multiplier
+                                    </code>
+                                </div>
+                            </div>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="base_calculation_search_view" model="ir.ui.view">
+        <field name="name">base.calculation.view.search</field>
+        <field name="model">base.calculation</field>
+        <field name="arch" type="xml">
+            <search string="Base Calculation">
+                <field name="name" />
+                <field name="reference" />
+                <field name="model_id" />
+                <group expand="0" string="Group By">
+                    <filter
+                        string="Model"
+                        name="group_by_model"
+                        domain="[]"
+                        context="{'group_by': 'model_id'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+
+    <record id="action_base_calculation" model="ir.actions.act_window">
+        <field name="name">Calculation</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">base.calculation</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="base_calculation_search_view" />
+    </record>
+
+    <menuitem
+        id="menu_base_calculation"
+        name="Calculations"
+        parent="base.menu_custom"
+    />
+    <menuitem
+        id="menu_base_calculation_form"
+        parent="base_calculation.menu_base_calculation"
+        action="base_calculation.action_base_calculation"
+        sequence="1"
+    />
+</odoo>

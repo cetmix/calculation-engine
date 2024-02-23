@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="base_calculation_test_view_form" model="ir.ui.view">
+        <field name="name">base.calculation.test.view.form</field>
+        <field name="model">base.calculation.test</field>
+        <field name="arch" type="xml">
+            <form string="Base Calculation Test">
+                <h3>Test of <field
+                        name="base_calculation_id"
+                        readonly="1"
+                        nolabel="1"
+                        options="{'no_open' : True}"
+                    /> (<field name="reference" />)</h3>
+                <div
+                    class="alert alert-danger"
+                    role="alert"
+                    attrs="{'invisible' : [('error_msg', '=', False)]}"
+                >
+                    <field name="error_msg" widget="text" />
+                </div>
+                <div class="container">
+                    <div class="row">
+                        <span
+                            class="col-md-5 col-lg-4 col-sm-12 ps-0"
+                        >Choose an example <field
+                                name="model_id"
+                                readonly="1"
+                            /> record:</span>
+                        <div class="col-md-7 col-lg-6 col-sm-12 ps-0">
+                            <field
+                                name="resource_ref"
+                                readonly="False"
+                                class="w-100"
+                                options="{'hide_model': True, 'no_create': True, 'no_open': True}"
+                            />
+                        </div>
+                    </div>
+                </div>
+                <group>
+                    <field name="calculation_result" readonly="1" />
+                </group>
+                <footer>
+                    <button
+                        string="Close"
+                        class="btn-secondary"
+                        special="cancel"
+                        data-hotkey="z"
+                    />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="base_calculation_test_action" model="ir.actions.act_window">
+        <field name="name">Base Calculation Test</field>
+        <field name="res_model">base.calculation.test</field>
+        <field name="binding_model_id" eval="False" />
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="base_calculation_test_view_form" />
+        <field name="target">new</field>
+        <field name="context">{'default_base_calculation_id':active_id}</field>
+    </record>
+</odoo>
