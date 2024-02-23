@@ -38,9 +38,9 @@ class BaseCalculation(models.Model):
         store=True,
         readonly=True,
     )
-    block_ids = fields.One2many(
-        string="Blocks",
-        comodel_name="base.calculation.block",
+    line_ids = fields.One2many(
+        string="Lines",
+        comodel_name="base.calculation.line",
         inverse_name="calculation_id",
         auto_join=True,
     )
@@ -174,5 +174,5 @@ class BaseCalculation(models.Model):
                 except Exception:
                     evaluated_variables[key] = expr
             evaluated_variables.update(eval_context)
-            result.append(calculation.block_ids.calculate_block(evaluated_variables))
+            result.append(calculation.line_ids.calculate_line(evaluated_variables))
         return result

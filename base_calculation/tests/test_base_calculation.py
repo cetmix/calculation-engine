@@ -13,6 +13,7 @@ class TestBaseCalculation(BaseCommon):
         cls.sale_order_line_obj = cls.env["sale.order.line"]
         cls.calculation_obj = cls.env["base.calculation"]
         cls.calculation_block_obj = cls.env["base.calculation.block"]
+        cls.calculation_line_obj = cls.env["base.calculation.line"]
         cls.calculation_variable_obj = cls.env["base.calculation.variable"]
         cls.calculation_variable_line_obj = cls.env["base.calculation.variable.line"]
         partner_model = cls.env["ir.model"].search([("model", "=", "res.partner")])
@@ -142,10 +143,16 @@ class TestBaseCalculation(BaseCommon):
         )
         cls.calculation_discount_block = cls.calculation_block_obj.create(
             {
-                "calculation_id": cls.calculation_discount.id,
+                "name": "Apply Sales Order Discount",
                 "reference": "APPLY_DISCOUNT",
                 "expression": """discount_multiplier = (100-DISCOUNT_PERCENT)/100\n"""
                 """RESULT["final_price"] = SALE_TOTAL * discount_multiplier""",
+            }
+        )
+        cls.calculation_discount_line = cls.calculation_line_obj.create(
+            {
+                "calculation_id": cls.calculation_discount.id,
+                "block_id": cls.calculation_discount_block.id,
                 "condition": 'SALE_TOTAL > 10000 and CITY_NAME.upper() == "NEW YORK"',
             }
         )
@@ -203,20 +210,32 @@ class TestBaseCalculation(BaseCommon):
         )
         cls.calculation_loyalty_block_1 = cls.calculation_block_obj.create(
             {
-                "calculation_id": cls.calculation_loyalty.id,
+                "name": "Partner Loyalty Block 1",
                 "reference": "COMPOSE_LOYALTY_MESSAGE",
                 "expression": """RESULT["loyalty_message"] = """
                 """f'Such Much {TAX_NUMBER} for {PHONE}'""",
             }
         )
-        cls.calculation_loyalty_block_2 = cls.calculation_block_obj.create(
+        cls.calculation_loyalty_line_1 = cls.calculation_line_obj.create(
             {
                 "calculation_id": cls.calculation_loyalty.id,
+                "block_id": cls.calculation_loyalty_block_1.id,
+            }
+        )
+        cls.calculation_loyalty_block_2 = cls.calculation_block_obj.create(
+            {
+                "name": "Partner Loyalty Block 2",
                 "reference": "COMPUTE_POINTS",
                 "expression": """message = RESULT["loyalty_message"]  """
                 """# this was initialized in the previous block\n"""
                 """if message:\n\tRESULT["loyalty_points"] = len(message) * 12\n"""
                 """RESULT["loyalty_message"] = "WOW! " + RESULT["loyalty_message"]""",
+            }
+        )
+        cls.calculation_loyalty_line_2 = cls.calculation_line_obj.create(
+            {
+                "calculation_id": cls.calculation_loyalty.id,
+                "block_id": cls.calculation_loyalty_block_2.id,
                 "condition": "MOBILE == False",
             }
         )

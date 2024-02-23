@@ -1,6 +1,6 @@
-============================
-User Configurable Calculator
-============================
+=======================
+Odoo Calculation Engine
+=======================
 
 .. 
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -30,15 +30,16 @@ be evaluated further in other Odoo modules.
 
 Calculation
 
-Each calculation block has the following settings:
+Each calculation consist of Calculation Lines which defines what will
+happen when calculation process will reach it.
+
+Each Calculation Line has the following settings:
 
 -  Sequence. Positional order of the block in the calculation chain.
    Calculation blocks are processed in order from the lowest to the
    highest sequence number.
--  Condition. A Python expression which describes when the block is
-   involved in the calculation chain.
--  Action. A Python expression that performs the evaluations within the
-   block.
+-  Condition. Python expression that must be complied to run this line.
+-  Calculation Block that will be evaluated.
 
 **Table of contents**
 
@@ -92,37 +93,38 @@ To configure a Calculation
 Go to "Settings/Technical/Calculations/Calculation" and create a new
 Calculation:
 
-Name. Readable name of the Calculation.
+``Name``. Readable name of the Calculation.
 
-Reference. This is a unique reference of the Calculation that will be
-used in expressions. Must contain
+``Reference``. This is a unique reference of the Calculation that will
+be used in expressions. Must contain
 CAPITAL_LETTERS_NUMBERS_EG_1_AND_UNDERSCORES_ONLY
 
-Model. Base model used by the Calculation. Same as "model" keyword in
-server actions.
+``Model``. Base model used by the Calculation. Same as "model" keyword
+in server actions.
 
-Variables. List of pre-defined variables that will be populated to the
-Calculation Blocks. Python expressions can be used same as in server
+``Variables``. List of pre-defined variables that will be populated to
+the Calculation Blocks. Python expressions can be used same as in server
 actions. Example (model = res.partner)
 
-CITY_NAME = record.city SALE_TOTAL = sum(order.amount_total for order in
-record.sale_order_ids) DISCOUNT_PERCENT = 10 Blocks. List of calculation
-blocks and conditions to be met to trigger them. Example (order, block,
-condition) 10, "Apply Discount", SALE_TOTAL > 10000 and
-CITY_NAME.upper() == "NEW YORK"
+CITY_NAME = record.city_id.name SALE_TOTAL =
+record.sale_order_ids.amount_total DISCOUNT_PERCENT = 10
 
-To configure a Calculation Block:
+``Blocks``. List of calculation blocks and conditions to be met to
+trigger them. Example (order, block, condition) 10, "Apply Discount",
+SALE_TOTAL > 10000 and CITY_NAME.upper() == "NEW YORK"
 
-Go to "Settings/Technical/Calculations/Calculation" and create a new
-Calculation:
+To configure a Calculation Block
 
-Name. Readable name of the Calculation.
+Go to "Settings/Technical/Calculations/Calculation Blocks" and create a
+new Calculation Block:
 
-Reference. This is a unique reference of the Calculation that will be
-used in expressions. Must contain
+``Name``. Readable name of the Calculation Block.
+
+``Reference``. This is a unique reference of the Calculation that will
+be used in expressions. Must contain
 CAPITAL_LETTERS_NUMBERS_EG_1_AND_UNDERSCORES_ONLY
 
-Expression. Python expression. Must assign a value to the built-in
+``Expression``. Python expression. Must assign a value to the built-in
 RESULT variable. Example:
 
 discount_multiplier = (100-DISCOUNT_PERCENT)/100 RESULT["final_price"] =
@@ -131,7 +133,7 @@ SALE_TOTAL \* discount_multiplier Built-in variables
 Following global and built-in variables are accessible from any
 expression:
 
-RESULT: dictionary with values. Holds the current result of the
+``RESULT``: dictionary with values. Holds the current result of the
 Calculation process as it is available at the moment of the expression
 evaluation. You can also get the RESULT as it is available at the the
 particular Calculation Block output. Those values are accessible using
@@ -159,12 +161,6 @@ selv.env["base.calculation").calculate("SALES_DISCOUNT",
 records_to_process, \**initial_values) This call will evaluate the
 "Compute Sales Order Discount"(ref="SALES_DISCOUNT") Calculation and
 assign the result to the "result" value.
-
-Known issues / Roadmap
-======================
-
-Known limitations and roadmap. Eg "Doesn't work with Odoo EE barcode
-App" or "TODO: add kanban view stats"
 
 Bug Tracker
 ===========
