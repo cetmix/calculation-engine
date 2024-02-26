@@ -11,7 +11,7 @@
     "application": False,
     "installable": True,
     "images": ["static/description/banner.png"],
-    "depends": ["sale", "purchase", "stock"],
+    "depends": ["base"],
     "data": [
         "security/ir.model.access.csv",
         "wizard/base_calculation_test_view.xml",
@@ -19,5 +19,4 @@
         "views/base_calculation_variable_view.xml",
         "views/base_calculation_block_view.xml",
     ],
-    "demo": ["demo/base_calculation_demo.xml"],
 }
