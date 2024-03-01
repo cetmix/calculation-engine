@@ -1,10 +1,9 @@
 # Copyright (C) 2024 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0).
 
-import re
 from copy import deepcopy
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 from odoo.tools.safe_eval import safe_eval, test_python_expr
 
@@ -26,20 +25,12 @@ class BaseCalculationLine(models.Model):
         "base.calculation.block",
         ondelete="cascade",
         help="Calculation Block that will be evaluated",
+        auto_join=True,
     )
     calculation_id = fields.Many2one("base.calculation", ondelete="cascade")
-
-    @api.constrains("reference")
-    def _check_reference_format(self):
-        for record in self:
-            if record.reference:
-                if not re.match(r"^[A-Z0-9_]+$", record.reference):
-                    raise ValidationError(
-                        _(
-                            "Reference must contain only capital letters, "
-                            "numbers, and underscores."
-                        )
-                    )
+    reference = fields.Char(
+        related="block_id.reference", store=True, readonly=True, index=True
+    )
 
     @api.constrains("condition")
     def _check_python_condition(self):
@@ -57,7 +48,7 @@ class BaseCalculationLine(models.Model):
             variables (dict): Dictionary containing variables to be used in evaluation.
 
         Returns:
-            dict: Dictionary containing the results obtained
+            result (dict): Dictionary containing the results obtained
             from evaluating expressions.
         """
         result = dict()

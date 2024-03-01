@@ -2,37 +2,29 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0).
 
 import base64
-import re
 
 from pytz import timezone
 
-from odoo import Command, _, api, fields, models, tools
-from odoo.exceptions import UserError, ValidationError
+from odoo import Command, fields, models, tools
+from odoo.exceptions import UserError
 from odoo.tools.float_utils import float_compare
 from odoo.tools.safe_eval import safe_eval
 
 
 class BaseCalculation(models.Model):
+    _inherit = "base.calculation.ref.mixin"
     _name = "base.calculation"
     _description = "Base Calculation"
 
-    name = fields.Char(required=True)
-    reference = fields.Char(
-        required=True,
-        help="This is a unique reference of the Calculation "
-        "that will be used in expressions. Must contain "
-        "CAPITAL_LETTERS_NUMBERS_EG_1_AND_UNDERSCORES_ONLY",
-    )
     model_id = fields.Many2one(
         "ir.model",
-        string="Model",
         required=True,
         ondelete="cascade",
         index=True,
         help="Base model used by the Calculation.",
     )
     model = fields.Char(
-        "Related Document Model",
+        "Related Document Model Name",
         related="model_id.model",
         index=True,
         store=True,
@@ -44,31 +36,13 @@ class BaseCalculation(models.Model):
         inverse_name="calculation_id",
         auto_join=True,
     )
-    variable_ids = fields.One2many(
+    variable_line_ids = fields.One2many(
         string="Variables",
         comodel_name="base.calculation.variable.line",
         inverse_name="calculation_id",
         auto_join=True,
     )
     active = fields.Boolean(default=True)
-
-    @api.model
-    def create(self, vals):
-        reference = vals.get("reference", False)
-        if reference and not re.match(r"^[A-Z0-9_]+$", reference):
-            vals.update({"reference": self._auto_correct_reference(reference)})
-        return super().create(vals)
-
-    def write(self, vals):
-        reference = vals.get("reference", False)
-        if reference and not re.match(r"^[A-Z0-9_]+$", reference):
-            vals.update({"reference": self._auto_correct_reference(reference)})
-        return super().write(vals)
-
-    def _auto_correct_reference(self, reference):
-        """Auto-corrects the reference to match the specified pattern."""
-        corrected = re.sub(r"[^A-Z0-9_]", "", reference.replace(" ", "_").upper())
-        return corrected
 
     def _get_eval_context(self, records=None):
         """Prepare the context used when evaluating python code.
@@ -82,6 +56,13 @@ class BaseCalculation(models.Model):
         """
 
         def log(message, level="info"):
+            """
+            Inserts a log entry into `ir_logging` with the given message and level.
+
+            Args:
+                message (str): Log message.
+                level (str): Log level, defaults to 'info'.
+            """
             with self.pool.cursor() as cr:
                 cr.execute(
                     """
@@ -134,7 +115,7 @@ class BaseCalculation(models.Model):
         }
         return eval_context
 
-    def calculate(self, reference, records_to_process, **initial_values):
+    def calculate(self, records_to_process, **initial_values):
         """
         Perform calculation based on the given reference, records and initial values
 
@@ -144,30 +125,25 @@ class BaseCalculation(models.Model):
             **initial_values: Additional initial values for the calculation.
 
         Returns:
-            list: Results for each record obtained from each calculation block.
+            result (dict): Results for each record obtained from each calculation line
+            Ex: {'record_id': {calculation_result}...}
+            NB: 'record_id' is String
         """
-        # Find the calculation based on the provided reference
-        calculation = self.search([("reference", "=", reference)], limit=1)
-        if not calculation:
-            raise ValidationError(
-                _(f"Calculation not found for reference: {reference}")
-            )
-
-        result = []
+        result = dict()
 
         # Initialize variables dictionary with values from calculation
         variables = {
-            record.variable_id.name: int(record.value)
+            record.variable_name: int(record.value)
             if record.value.isdigit()
             else float(record.value)
             if record.value.replace(".", "", 1).isdigit()
             else record.value
-            for record in calculation.variable_ids
+            for record in self.variable_line_ids
         }
         variables.update(initial_values)
 
         # Construct evaluation context
-        eval_context = calculation._get_eval_context(records_to_process)
+        eval_context = self._get_eval_context(records_to_process)
 
         # Evaluate expressions for each record
         for record in records_to_process:
@@ -180,5 +156,5 @@ class BaseCalculation(models.Model):
                 except Exception:
                     evaluated_variables[key] = expr
             evaluated_variables.update(eval_context)
-            result.append(calculation.line_ids.calculate_line(evaluated_variables))
+            result[str(record.id)] = self.line_ids.calculate_line(evaluated_variables)
         return result
