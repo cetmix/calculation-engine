@@ -97,6 +97,13 @@
                                 </form>
                             </field>
                         </page>
+                        <page string="Note">
+                            <field
+                                name="note"
+                                nolabel="1"
+                                placeholder="Write here any other information related to this calculation"
+                            />
+                        </page>
                         <page string="Help" name="help_info">
                             <div style="margin-top: 4px;">
                                 <h3>Help with Python expressions</h3>
