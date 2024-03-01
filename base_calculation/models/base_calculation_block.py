@@ -1,14 +1,13 @@
 # Copyright (C) 2024 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0).
 
-import re
-
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 from odoo.tools.safe_eval import test_python_expr
 
 
 class BaseCalculationBlock(models.Model):
+    _inherit = "base.calculation.ref.mixin"
     _name = "base.calculation.block"
     _description = "Base Calculation Block"
     _rec_name = "name"
@@ -29,13 +28,6 @@ class BaseCalculationBlock(models.Model):
     # To return a RESULT, assign: RESULT["key_name"] = ...
     # Ex: RESULT["final_price"] = SALE_TOTAL * discount_multiplier\n\n\n\n"""
 
-    name = fields.Char(required=True)
-    reference = fields.Char(
-        required=True,
-        help="This is a unique reference of the Calculation Block "
-        "that will be used in expressions. Must contain "
-        "CAPITAL_LETTERS_NUMBERS_EG_1_AND_UNDERSCORES_ONLY",
-    )
     expression = fields.Text(
         string="Python Expression",
         default=DEFAULT_PYTHON_CODE,
@@ -49,9 +41,9 @@ class BaseCalculationBlock(models.Model):
         auto_join=True,
     )
     calculation_ids = fields.Many2many(
-        "base.calculation", compute="_compute_calculation_ids"
+        "base.calculation", compute="_compute_calculation_ids", store=True
     )
-    calculation_count = fields.Integer(compute="_compute_calculation_count")
+    calculation_count = fields.Integer(compute="_compute_calculation_count", store=True)
 
     @api.depends("line_ids")
     def _compute_calculation_ids(self):
@@ -69,24 +61,6 @@ class BaseCalculationBlock(models.Model):
             msg = test_python_expr(expr=record.expression.strip(), mode="exec")
             if msg:
                 raise ValidationError(msg)
-
-    @api.model
-    def create(self, vals):
-        reference = vals.get("reference", False)
-        if reference and not re.match(r"^[A-Z0-9_]+$", reference):
-            vals.update({"reference": self._auto_correct_reference(reference)})
-        return super().create(vals)
-
-    def write(self, vals):
-        reference = vals.get("reference", False)
-        if reference and not re.match(r"^[A-Z0-9_]+$", reference):
-            vals.update({"reference": self._auto_correct_reference(reference)})
-        return super().write(vals)
-
-    def _auto_correct_reference(self, reference):
-        """Auto-corrects the reference to match the specified pattern."""
-        corrected = re.sub(r"[^A-Z0-9_]", "", reference.replace(" ", "_").upper())
-        return corrected
 
     def action_view_related_calculations(self):
         self.ensure_one()

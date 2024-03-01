@@ -115,27 +115,30 @@ class TestBaseCalculation(BaseCommon):
         )
         initial_values = {}
         reference = "PARTNER_LOYALTY"
+        # Get calculation by reference
+        my_calculation = self.env["base.calculation"].get_by_reference(reference)
 
         # Perform Calculation
-        result = self.calculation_obj.calculate(
-            reference, records_to_process, **initial_values
-        )
+        result = my_calculation.calculate(records_to_process, **initial_values)
+
         loyalty_messages = set()
         loyalty_points = set()
 
-        # Check if result is a list
-        self.assertIsInstance(result, list)
+        # Check if result is a dict
+        self.assertIsInstance(result, dict)
 
-        # Check if each element in the result is a list
-        for record_dict in result:
-            # Check if each element in the list is a dictionary
-            self.assertIsInstance(record_dict, dict)
+        # Check if each item in the result is a dict
+        for record_id, calculation_result in result.items():
+            # Check if record_id is partner id
+            partner = self.partner_obj.browse([int(record_id)])
+            self.assertEqual(partner.id, int(record_id), "Partner not found")
+
             # Check if each record_dict contains the 'loyalty_message' key
-            self.assertIn("loyalty_message", record_dict)
-            loyalty_messages.add(record_dict["loyalty_message"])
+            self.assertIn("loyalty_message", calculation_result)
+            loyalty_messages.add(calculation_result["loyalty_message"])
             # Check if each record_dict contains the 'loyalty_points' key
-            self.assertIn("loyalty_points", record_dict)
-            loyalty_points.add(record_dict["loyalty_points"])
+            self.assertIn("loyalty_points", calculation_result)
+            loyalty_points.add(calculation_result["loyalty_points"])
 
         # Check if 'loyalty_message' is different for each dictionary
         self.assertGreater(

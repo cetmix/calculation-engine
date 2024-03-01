@@ -17,6 +17,9 @@ class BaseCalculationVariableLine(models.Model):
     _description = "Base Calculation Variable Line"
 
     variable_id = fields.Many2one("base.calculation.variable", ondelete="cascade")
+    variable_name = fields.Char(
+        related="variable_id.name", index=True, store=True, readonly=True
+    )
     value = fields.Char(
         groups="base.group_system",
         help="This field allows you to specify a variable value "

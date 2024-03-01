@@ -49,9 +49,10 @@ class BaseCalculationTest(models.TransientModel):
             self.calculation_result = False
             if self.resource_ref:
                 initial_values = {}
-                result = self.env["base.calculation"].calculate(
-                    self.reference, self.resource_ref, **initial_values
+                calculation = self.env["base.calculation"].get_by_reference(
+                    self.reference
                 )
+                result = calculation.calculate(self.resource_ref, **initial_values)
                 self.calculation_result = result
             self.error_msg = False
         except (ValueError, SyntaxError) as error:
