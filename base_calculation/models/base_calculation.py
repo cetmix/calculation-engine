@@ -43,6 +43,7 @@ class BaseCalculation(models.Model):
         auto_join=True,
     )
     active = fields.Boolean(default=True)
+    note = fields.Text()
 
     def _get_eval_context(self, records=None):
         """Prepare the context used when evaluating python code.
