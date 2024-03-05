@@ -26,8 +26,11 @@ class BaseCalculationLine(models.Model):
         ondelete="cascade",
         help="Calculation Block that will be evaluated",
         auto_join=True,
+        required=True,
     )
-    calculation_id = fields.Many2one("base.calculation", ondelete="cascade")
+    calculation_id = fields.Many2one(
+        "base.calculation", ondelete="cascade", required=True
+    )
     reference = fields.Char(
         related="block_id.reference", store=True, readonly=True, index=True
     )

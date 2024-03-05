@@ -48,6 +48,7 @@
                                 <tree editable="bottom">
                                     <field name="sequence" widget="handle" />
                                     <field name="block_id" />
+                                    <field name="reference" optional="show" />
                                     <field
                                         name="condition"
                                         placeholder="e.g. SALE_TOTAL > 10000 and CITY_NAME.upper() == 'NEW YORK'"
