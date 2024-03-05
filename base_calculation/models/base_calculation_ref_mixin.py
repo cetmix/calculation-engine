@@ -37,6 +37,17 @@ class BaseCalculationRefMixin(models.AbstractModel):
                         )
                     )
 
+    def _get_reference_pattern(self):
+        """
+        Returns the regex pattern used for validating and correcting references.
+
+        This allows for easy modification of the pattern in one place.
+
+        Returns:
+            str: A regex pattern
+        """
+        return r"A-Z0-9_"
+
     def _auto_correct_reference(self, reference):
         """
         Auto-corrects the reference to match the specified pattern.
@@ -47,7 +58,8 @@ class BaseCalculationRefMixin(models.AbstractModel):
         Returns:
             str: Corrected reference.
         """
-        corrected = re.sub(r"[^A-Z0-9_]", "", reference.replace(" ", "_").upper())
+        pattern = self._get_reference_pattern()
+        corrected = re.sub(f"[^{pattern}]", "", reference.replace(" ", "_").upper())
         return corrected
 
     def _reference_is_valid(self, reference):
@@ -62,7 +74,8 @@ class BaseCalculationRefMixin(models.AbstractModel):
         Returns:
             bool: True if the reference is valid, False otherwise.
         """
-        return bool(re.match(r"^[A-Z0-9_]+$", reference))
+        pattern = self._get_reference_pattern()
+        return bool(re.match(f"^[{pattern}]+$", reference))
 
     @api.model_create_multi
     def create(self, vals_list):

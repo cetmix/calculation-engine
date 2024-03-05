@@ -16,7 +16,9 @@ class BaseCalculationVariableLine(models.Model):
     _name = "base.calculation.variable.line"
     _description = "Base Calculation Variable Line"
 
-    variable_id = fields.Many2one("base.calculation.variable", ondelete="cascade")
+    variable_id = fields.Many2one(
+        "base.calculation.variable", ondelete="cascade", required=True
+    )
     variable_name = fields.Char(
         related="variable_id.name", index=True, store=True, readonly=True
     )
