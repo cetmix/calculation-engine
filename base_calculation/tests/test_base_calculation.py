@@ -65,6 +65,21 @@ class TestBaseCalculation(BaseCommon):
                 "condition": "MOBILE == False",
             }
         )
+        cls.calculation_loyalty_block_3 = cls.calculation_block_obj.create(
+            {
+                "name": "Partner Loyalty Block 3",
+                "reference": "PARTNER_LOYALTY_BLOCK_3",
+                "expression": """message = """
+                """COMPOSE_LOYALTY_MESSAGE.RESULT["loyalty_message"]\n"""
+                """if message:\n\tRESULT["compose_loyalty_message"] = message\n""",
+            }
+        )
+        cls.calculation_loyalty_line_3 = cls.calculation_line_obj.create(
+            {
+                "calculation_id": cls.calculation_loyalty.id,
+                "block_id": cls.calculation_loyalty_block_3.id,
+            }
+        )
         cls.calc_loyalty_variable_1 = cls.calculation_variable_obj.create(
             {
                 "name": "TAX_NUMBER",
@@ -136,9 +151,19 @@ class TestBaseCalculation(BaseCommon):
             # Check if each record_dict contains the 'loyalty_message' key
             self.assertIn("loyalty_message", calculation_result)
             loyalty_messages.add(calculation_result["loyalty_message"])
+
             # Check if each record_dict contains the 'loyalty_points' key
             self.assertIn("loyalty_points", calculation_result)
             loyalty_points.add(calculation_result["loyalty_points"])
+
+            # Check if each record_dict contains the 'compose_loyalty_message' key
+            self.assertIn("compose_loyalty_message", calculation_result)
+
+            # Check if compose_loyalty_message is different than loyalty_message
+            self.assertNotEqual(
+                calculation_result["compose_loyalty_message"],
+                calculation_result["loyalty_message"],
+            )
 
         # Check if 'loyalty_message' is different for each dictionary
         self.assertGreater(
