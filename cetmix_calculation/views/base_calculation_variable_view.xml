@@ -45,8 +45,8 @@
 
     <menuitem
         id="menu_base_calculation_variable_form"
-        parent="base_calculation.menu_base_calculation"
-        action="base_calculation.action_base_calculation_variable"
+        parent="cetmix_calculation.menu_base_calculation"
+        action="cetmix_calculation.action_base_calculation_variable"
         sequence="2"
     />
 </odoo>

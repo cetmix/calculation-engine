@@ -21,7 +21,7 @@
                     <div class="oe_button_box" name="button_box">
                         <button
                             class="oe_stat_button"
-                            name="%(base_calculation.base_calculation_test_action)d"
+                            name="%(cetmix_calculation.base_calculation_test_action)d"
                             icon="fa-calculator"
                             string="Test"
                             type="action"
@@ -181,8 +181,8 @@
     <menuitem id="menu_base_calculation" name="Calculation" parent="base.menu_custom" />
     <menuitem
         id="menu_base_calculation_form"
-        parent="base_calculation.menu_base_calculation"
-        action="base_calculation.action_base_calculation"
+        parent="cetmix_calculation.menu_base_calculation"
+        action="cetmix_calculation.action_base_calculation"
         sequence="1"
     />
 </odoo>
