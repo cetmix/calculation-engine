@@ -177,3 +177,29 @@ class TestBaseCalculation(BaseCommon):
             1,
             "Loyalty points should be different for each dictionary",
         )
+
+    def test_normalize_variable_name(self):
+        """Test Normalize Variable Name"""
+        test_cases = [
+            ("normalVariable", "normalvariable"),
+            ("NORMAL_VAR@", "normal_var"),
+            ("NORMAL_VAR", "NORMAL_VAR"),
+            ("VariableWithCAPS", "variablewithcaps"),
+            ("123startWithNumber", "var_123startwithnumber"),
+            ("special!@#$", "special"),
+            ("with spaces", "with_spaces"),
+            ("__leadingUnderscores", "leadingunderscores"),
+            ("trailingUnderscores__", "trailingunderscores"),
+            ("class", "var_class"),
+            ("@@@@@%%", "var_default"),
+            ("normal variable @@@@@%%", "normal_variable"),
+        ]
+
+        # Test each case
+        for original_name, expected_name in test_cases:
+            variable = self.calculation_variable_obj.create({"name": original_name})
+            self.assertEqual(
+                variable.name,
+                expected_name,
+                f"Failed normalization: Expected {expected_name}, got {variable.name}.",
+            )
