@@ -18,5 +18,6 @@
         "views/base_calculation_view.xml",
         "views/base_calculation_variable_view.xml",
         "views/base_calculation_block_view.xml",
+        "views/base_calculation_variable_line_view.xml",
     ],
 }
