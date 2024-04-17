@@ -128,11 +128,11 @@ class BaseCalculationRefMixin(models.AbstractModel):
         """
         self.ensure_one()
         original_name = self.name
-        copy_name = _(f"{original_name} (copy)")
+        copy_name = _(f"{original_name} (Copy)")
         counter = 1
         while self.search_count([("name", "=", copy_name)]) > 0:
             counter += 1
-            copy_name = _(f"{original_name} (copy {counter})")
+            copy_name = _(f"{original_name} (Copy {counter})")
         return copy_name
 
     def copy(self, default=None):

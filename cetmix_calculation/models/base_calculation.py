@@ -35,6 +35,7 @@ class BaseCalculation(models.Model):
         comodel_name="base.calculation.line",
         inverse_name="calculation_id",
         auto_join=True,
+        copy=True,
     )
     variable_line_ids = fields.One2many(
         string="Variables",
