@@ -41,13 +41,7 @@
                         <field name="calculation_result" readonly="1" />
                     </page>
                     <page name="Variable Values">
-                        <field name="variable_values_ids" readonly="1">
-                            <tree>
-                                <field name="variable_name" />
-                                <field name="value" />
-                                <field name="calculation_test_id" invisible="1" />
-                            </tree>
-                        </field>
+                        <field name="variable_values" readonly="1" />
                     </page>
                 </notebook>
                 <footer>

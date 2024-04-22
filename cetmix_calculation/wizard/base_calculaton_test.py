@@ -2,6 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0).
 
 from odoo import api, fields, models
+from odoo.tools.safe_eval import safe_eval
 
 
 class BaseCalculationTest(models.TransientModel):
@@ -41,12 +42,7 @@ class BaseCalculationTest(models.TransientModel):
     )
     error_msg = fields.Char("Error Message", readonly=True)
     calculation_result = fields.Text(compute="_compute_calculation_test_fields")
-    variable_values_ids = fields.One2many(
-        comodel_name="base.calculation.test.variable.values",
-        inverse_name="calculation_test_id",
-        auto_join=True,
-        compute="_compute_calculation_test_fields",
-    )
+    variable_values = fields.Text(compute="_compute_calculation_test_fields")
 
     @api.depends("resource_ref")
     def _compute_calculation_test_fields(self):
@@ -55,27 +51,29 @@ class BaseCalculationTest(models.TransientModel):
         try:
             self.calculation_result = False
             if self.resource_ref:
+                # Compute Result
                 initial_values = {}
                 calculation = self.env["base.calculation"].get_by_reference(
                     self.reference
                 )
                 result = calculation.calculate(self.resource_ref, **initial_values)
                 self.calculation_result = result
+
+                # Compute Variable Values
                 variables = calculation.get_calculation_variables(initial_values)
-                self.variable_values_ids = [
-                    (0, 0, {"variable_name": name, "value": value})
-                    for name, value in variables.items()
-                ]
+                variable_values = ""
+                # Construct evaluation context
+                eval_context = calculation._get_eval_context(self.resource_ref)
+                eval_context["record"] = self.resource_ref
+                for key, expr in variables.items():
+                    try:
+                        value = safe_eval(expr, {}, eval_context)
+                        variable_values += f"{key} = {value if value else ''}\n"
+                    except Exception:
+                        variable_values += f"{key} = {expr}\n"
+                self.variable_values = variable_values.strip()
+
             self.error_msg = False
         except (ValueError, SyntaxError) as error:
             self.error_msg = error.args[0]
             self.calculation_result = False
-
-
-class BaseCalculationTestVariableValues(models.TransientModel):
-    _name = "base.calculation.test.variable.values"
-    _description = "Base Calculation Test Variable Values"
-
-    variable_name = fields.Char(string="Name")
-    value = fields.Char()
-    calculation_test_id = fields.Many2one("base.calculation.test", ondelete="cascade")
