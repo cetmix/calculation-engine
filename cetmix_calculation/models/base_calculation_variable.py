@@ -13,6 +13,7 @@ class BaseCalculationVariable(models.Model):
     _description = "Base Calculation Variable"
 
     name = fields.Char(required=True)
+    note = fields.Text()
 
     def _normalize_variable_name(self, name):
         """
