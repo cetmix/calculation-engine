@@ -40,11 +40,18 @@ class BaseCalculationTest(models.TransientModel):
         string="Record", selection="_selection_target_model"
     )
     error_msg = fields.Char("Error Message", readonly=True)
-    calculation_result = fields.Text(compute="_compute_calculation_result_field")
+    calculation_result = fields.Text(compute="_compute_calculation_test_fields")
+    variable_values_ids = fields.One2many(
+        comodel_name="base.calculation.test.variable.values",
+        inverse_name="calculation_test_id",
+        auto_join=True,
+        compute="_compute_calculation_test_fields",
+    )
 
     @api.depends("resource_ref")
-    def _compute_calculation_result_field(self):
-        """Compute the calculation result based on resource_ref."""
+    def _compute_calculation_test_fields(self):
+        """Compute the calculation result and variable_values_ids
+        based on resource_ref."""
         try:
             self.calculation_result = False
             if self.resource_ref:
@@ -54,7 +61,24 @@ class BaseCalculationTest(models.TransientModel):
                 )
                 result = calculation.calculate(self.resource_ref, **initial_values)
                 self.calculation_result = result
+                self.variable_values_ids = [
+                    (
+                        0,
+                        0,
+                        {"variable_name": record.variable_name, "value": record.value},
+                    )
+                    for record in calculation.variable_line_ids
+                ]
             self.error_msg = False
         except (ValueError, SyntaxError) as error:
             self.error_msg = error.args[0]
             self.calculation_result = False
+
+
+class BaseCalculationTestVariableValues(models.TransientModel):
+    _name = "base.calculation.test.variable.values"
+    _description = "Base Calculation Test Variable Values"
+
+    variable_name = fields.Char(string="Name")
+    value = fields.Char()
+    calculation_test_id = fields.Many2one("base.calculation.test", ondelete="cascade")
