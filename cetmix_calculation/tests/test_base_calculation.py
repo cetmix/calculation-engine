@@ -100,7 +100,6 @@ class TestBaseCalculation(BaseCommon):
                 {
                     "variable_id": cls.calc_loyalty_variable_1.id,
                     "value": "record.vat",
-                    "calculation_id": cls.calculation_loyalty.id,
                 }
             )
         )
@@ -109,7 +108,6 @@ class TestBaseCalculation(BaseCommon):
                 {
                     "variable_id": cls.calc_loyalty_variable_2.id,
                     "value": "record.phone",
-                    "calculation_id": cls.calculation_loyalty.id,
                 }
             )
         )

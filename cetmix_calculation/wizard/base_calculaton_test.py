@@ -61,13 +61,10 @@ class BaseCalculationTest(models.TransientModel):
                 )
                 result = calculation.calculate(self.resource_ref, **initial_values)
                 self.calculation_result = result
+                variables = calculation.get_calculation_variables(initial_values)
                 self.variable_values_ids = [
-                    (
-                        0,
-                        0,
-                        {"variable_name": record.variable_name, "value": record.value},
-                    )
-                    for record in calculation.variable_line_ids
+                    (0, 0, {"variable_name": name, "value": value})
+                    for name, value in variables.items()
                 ]
             self.error_msg = False
         except (ValueError, SyntaxError) as error:

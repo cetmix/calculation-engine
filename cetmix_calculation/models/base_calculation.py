@@ -117,6 +117,52 @@ class BaseCalculation(models.Model):
         }
         return eval_context
 
+    def get_variables_dict(self, variable_lines):
+        """Convert values from record lines into a dictionary with appropriate types.
+
+        Args:
+            variable_lines (base.calculation.variable.line):
+            A recordset of variable lines to process.
+
+        Returns:
+            dict: A dictionary mapping variable names
+            to converted values (int, float, or str).
+        """
+        return {
+            record.variable_name: int(record.value)
+            if record.value.isdigit()
+            else float(record.value)
+            if record.value.replace(".", "", 1).isdigit()
+            else record.value
+            for record in variable_lines
+        }
+
+    def get_calculation_variables(self, initial_values):
+        """Fetch and update global and calculation-specific variables
+        into a single dictionary.
+
+        Args:
+            initial_values (dict, optional): A dictionary of initial values to include.
+
+        Returns:
+            dict: A combined dictionary of all variables updated with initial values.
+        """
+        # Fetch records where calculation_id is False (Global Variables)
+        global_variables = self.env["base.calculation.variable.line"].search(
+            [("calculation_id", "=", False)]
+        )
+
+        # Initialize variables dictionary with global variables
+        variables = self.get_variables_dict(global_variables)
+
+        # Fetch and process variables from calculation
+        calculation_variables = self.get_variables_dict(self.variable_line_ids)
+
+        # Update dictionaries
+        variables.update(calculation_variables)
+        variables.update(initial_values)
+        return variables
+
     def calculate(self, records_to_process, **initial_values):
         """
         Perform calculation based on the given reference, records and initial values
@@ -133,16 +179,8 @@ class BaseCalculation(models.Model):
         """
         result = dict()
 
-        # Initialize variables dictionary with values from calculation
-        variables = {
-            record.variable_name: int(record.value)
-            if record.value.isdigit()
-            else float(record.value)
-            if record.value.replace(".", "", 1).isdigit()
-            else record.value
-            for record in self.variable_line_ids
-        }
-        variables.update(initial_values)
+        # Get calculation variables
+        variables = self.get_calculation_variables(initial_values)
 
         # Construct evaluation context
         eval_context = self._get_eval_context(records_to_process)

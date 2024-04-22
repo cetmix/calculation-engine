@@ -145,6 +145,15 @@ any value incompatibility and exception will be raised.
 Calculation Block references are accessible globally within the
 Calculation Block
 
+You can also define global variables. This variables are not connected
+to any specific calculation and are shared between all of them. They can
+be used as default parameters in case a value is not defined on the
+calculation level. Important! if you are using model properties in
+global variable values (eg record.partner_id.name​) you must ensure that
+the model you are using such variables in has those properties. Global
+variable values are overridden by calculation defined values and by
+values propagated from code.
+
 Usage
 =====
 

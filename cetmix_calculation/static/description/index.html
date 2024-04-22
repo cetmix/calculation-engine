@@ -470,6 +470,14 @@ CALCULATUION_BLOCK_REFERENCE.RESULT</p>
 any value incompatibility and exception will be raised.</p>
 <p>Calculation Block references are accessible globally within the
 Calculation Block</p>
+<p>You can also define global variables. This variables are not connected
+to any specific calculation and are shared between all of them. They can
+be used as default parameters in case a value is not defined on the
+calculation level. Important! if you are using model properties in
+global variable values (eg record.partner_id.name​) you must ensure that
+the model you are using such variables in has those properties. Global
+variable values are overridden by calculation defined values and by
+values propagated from code.</p>
 </div>
 <div class="section" id="usage">
 <h1><a class="toc-backref" href="#toc-entry-3">Usage</a></h1>
