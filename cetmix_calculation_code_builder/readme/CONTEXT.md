@@ -1,0 +1,1 @@
+Building calculations requires at least basic Python and Odoo technical knowledge. However, sometimes calculations should be built by users who don't possess those skills.

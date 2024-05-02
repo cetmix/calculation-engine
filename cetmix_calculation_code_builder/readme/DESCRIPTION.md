@@ -1,0 +1,1 @@
+This module allows to build Calculations directly from UI without a need to write Python code. It implements Expression Blocks​ which are being automatically converted into Python code.
