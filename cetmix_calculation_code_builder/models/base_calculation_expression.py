@@ -24,6 +24,14 @@ class BaseCalculationExpression(models.Model):
         inverse_name="expression_id",
         auto_join=True,
     )
+    variable_ids = fields.Many2many(
+        comodel_name="base.calculation.variable",
+        relation="base_calculation_variable_expression_rel",
+        column1="expression_id",
+        column2="variable_id",
+        required=True,
+        string="Add Variables to Result",
+    )
 
     def _prepare_expression_name(self):
         """Prepare expression name"""
@@ -49,6 +57,7 @@ class BaseCalculationExpression(models.Model):
             str: The result of the expression builder.
         """
         expression_result = ""
+        variables_result_names = []
         for expression in self:
             if expression.variable_line_ids:
                 expression_result += expression.rule_ids.generate_if_cases()
@@ -56,4 +65,13 @@ class BaseCalculationExpression(models.Model):
                     expression_result += (
                         f"\t{variable_line.variable_name} = {variable_line.value}\n"
                     )
+            variables_result_names.extend(
+                [variable.name for variable in expression.variable_ids]
+            )
+        expression_result += "\n".join(
+            [
+                f"RESULT['{variable_name}'] = {variable_name}"
+                for variable_name in variables_result_names
+            ]
+        )
         return expression_result

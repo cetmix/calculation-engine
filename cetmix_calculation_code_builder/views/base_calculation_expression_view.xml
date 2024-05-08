@@ -51,6 +51,13 @@
                             <field name="variable_line_ids" />
                         </page>
                     </notebook>
+                    <group>
+                        <field
+                            name="variable_ids"
+                            widget="many2many_tags"
+                            options="{'no_create_edit': True}"
+                        />
+                    </group>
                 </sheet>
             </form>
         </field>
