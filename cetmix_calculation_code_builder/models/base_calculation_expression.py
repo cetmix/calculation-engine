@@ -11,7 +11,7 @@ class BaseCalculationExpression(models.Model):
 
     active = fields.Boolean(default=True)
     order = fields.Integer(default=10)
-    name = fields.Char(required=True)
+    name = fields.Char(string="Expression", compute="_compute_expression_name")
     rule_ids = fields.One2many(
         comodel_name="base.calculation.expression.rule", inverse_name="expression_id"
     )
@@ -24,6 +24,16 @@ class BaseCalculationExpression(models.Model):
         inverse_name="expression_id",
         auto_join=True,
     )
+
+    def _prepare_expression_name(self):
+        """Prepare expression name"""
+        self.ensure_one()
+        return " OR ".join(self.rule_ids.mapped("name"))
+
+    def _compute_expression_name(self):
+        """Compute expression name"""
+        for rec in self:
+            rec.name = rec._prepare_expression_name()
 
     @api.onchange("rule_ids")
     def onchange_rules(self):

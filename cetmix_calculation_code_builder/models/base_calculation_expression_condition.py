@@ -22,7 +22,7 @@ class BaseCalculationExpressionCondition(models.Model):
     value = fields.Char(string="Search text (optional)")
     condition = fields.Selection(
         [
-            ("=", "is equal to"),
+            ("==", "is equal to"),
             ("!=", "is not equal to"),
             (">", "is greater than"),
             (">=", "is greater than or equal to"),

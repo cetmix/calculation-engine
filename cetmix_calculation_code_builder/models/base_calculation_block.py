@@ -42,3 +42,9 @@ class BaseCalculationBlock(models.Model):
                 )
             else:
                 record.expression = record.DEFAULT_PYTHON_CODE
+
+    @api.onchange("expression_ids")
+    def onchange_expression_ids(self):
+        """Compute expression name before saving"""
+        for rec in self:
+            rec.expression_ids._compute_expression_name()
