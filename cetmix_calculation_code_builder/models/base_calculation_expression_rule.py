@@ -1,11 +1,15 @@
 # Copyright (C) 2024 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0).
 
+import logging
+
 from odoo import api, fields, models
 
 from .states import (
     CONDITION,
 )
+
+_logger = logging.getLogger(__name__)
 
 
 class BaseCalculationExpressionRule(models.Model):
@@ -66,16 +70,29 @@ class BaseCalculationExpressionRule(models.Model):
         Returns:
             str: The string representation of the condition.
         """
-        if condition.condition == "like":
-            return f"'{condition.value}' in {condition.variable_id.name}"
-        elif condition.condition == "not_like":
-            return f"'{condition.value}' not in {condition.variable_id.name}"
-        elif condition.condition == "in":
-            values_list = [value.strip() for value in condition.value.split(",")]
-            values_str = ", ".join([f"'{value}'" for value in values_list])
-            return f"{condition.variable_id.name} in [{values_str}]"
-        elif condition.condition in CONDITION:
-            operator_string = condition.condition
-            return f"{condition.variable_id.name} {operator_string} '{condition.value}'"
-        else:
+        try:
+            if condition.condition in ["like", "not_like", "in"]:
+                values_list = [value.strip() for value in condition.value.split(",")]
+                if condition.variable_id.is_digit:
+                    values_str = ", ".join([str(float(value)) for value in values_list])
+                else:
+                    values_str = ", ".join([f"'{value}'" for value in values_list])
+                if condition.condition == "like":
+                    return f"({values_str}) in {condition.variable_id.name}"
+                elif condition.condition == "not_like":
+                    return f"({values_str}) not in {condition.variable_id.name}"
+                elif condition.condition == "in":
+                    return f"{condition.variable_id.name} in [{values_str}]"
+            elif condition.condition in CONDITION:
+                operator_string = condition.condition
+                if condition.variable_id.is_digit:
+                    value_str = str(float(condition.value))
+                else:
+                    value_str = f"'{condition.value}'"
+                return f"{condition.variable_id.name} {operator_string} {value_str}"
+            else:
+                return ""
+        except Exception as e:
+            error_message = f"Error: {str(e)}"
+            _logger.warning(error_message)
             return ""

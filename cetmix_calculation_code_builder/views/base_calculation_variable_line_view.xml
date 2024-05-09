@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record
+        id="base_calculation_variable_line_code_builder_tree_view"
+        model="ir.ui.view"
+    >
+        <field name="name">base.calculation.variable.line.code.builder.tre.form</field>
+        <field name="model">base.calculation.variable.line</field>
+        <field
+            name="inherit_id"
+            ref="cetmix_calculation.base_calculation_variable_line_view_tree"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='variable_id']" position="after">
+                <field name="is_digit" />
+            </xpath>
+        </field>
+    </record>
+
+    <record
+        id="base_calculation_variable_line_code_builder_form_view"
+        model="ir.ui.view"
+    >
+        <field name="name">base.calculation.variable.line.code.builder.form.form</field>
+        <field name="model">base.calculation.variable.line</field>
+        <field
+            name="inherit_id"
+            ref="cetmix_calculation.base_calculation_variable_line_search_view"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='variable_id']" position="after">
+                <field name="is_digit" />
+            </xpath>
+        </field>
+    </record>
+</odoo>

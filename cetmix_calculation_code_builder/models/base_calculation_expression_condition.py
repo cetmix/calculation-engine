@@ -1,11 +1,15 @@
 # Copyright (C) 2024 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0).
 
+import logging
+
 from odoo import fields, models
 
 from .states import (
     CONDITION,
 )
+
+_logger = logging.getLogger(__name__)
 
 
 class BaseCalculationExpressionCondition(models.Model):
@@ -38,10 +42,29 @@ class BaseCalculationExpressionCondition(models.Model):
 
     def _prepare_condition_name(self):
         """Prepare condition name"""
-        variable_name = self.variable_id.name
-        condition = CONDITION.get(self.condition)
-        contains = f"'{self.value}'"
-        return f"{variable_name} {condition} {contains}"
+        try:
+            variable_name = self.variable_id.name
+            condition = CONDITION.get(self.condition)
+            if condition in ["is in", "contains", "doesn't contain"]:
+                values_list = [value.strip() for value in self.value.split(",")]
+                if self.variable_id.is_digit:
+                    values_str = ", ".join([str(float(value)) for value in values_list])
+                else:
+                    values_str = ", ".join([f"'{value}'" for value in values_list])
+                if condition == "is in":
+                    return f"{variable_name} {condition} [{values_str}]"
+                else:
+                    return f"{variable_name} {condition} ({values_str})"
+            else:
+                if self.variable_id.is_digit:
+                    contains = str(float(self.value))
+                else:
+                    contains = f"'{self.value}'"
+                return f"{variable_name} {condition} {contains}"
+        except Exception as e:
+            error_message = f"Error: {str(e)}"
+            _logger.warning(error_message)
+            return ""
 
     def _compute_condition_name(self):
         """Compute name for condition"""
