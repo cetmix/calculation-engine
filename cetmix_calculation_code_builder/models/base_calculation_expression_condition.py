@@ -12,7 +12,7 @@ class BaseCalculationExpressionCondition(models.Model):
     _name = "base.calculation.expression.condition"
     _description = "Base Calculation Expression Conditions"
 
-    name = fields.Char(string="Condition name", compute="_compute_condition_name")
+    name = fields.Char(string="Conditions", compute="_compute_condition_name")
     rule_id = fields.Many2one(
         "base.calculation.expression.rule", string="Filter", ondelete="cascade"
     )
