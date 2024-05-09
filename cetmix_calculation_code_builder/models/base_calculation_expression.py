@@ -11,7 +11,12 @@ class BaseCalculationExpression(models.Model):
 
     active = fields.Boolean(default=True)
     order = fields.Integer(default=10)
-    name = fields.Char(string="Expression", compute="_compute_expression_name")
+    name = fields.Char(
+        string="Expression",
+        compute="_compute_expression_name",
+        store=True,
+        precompute=True,
+    )
     rule_ids = fields.One2many(
         comodel_name="base.calculation.expression.rule", inverse_name="expression_id"
     )
