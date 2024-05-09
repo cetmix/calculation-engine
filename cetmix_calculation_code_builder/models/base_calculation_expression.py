@@ -43,6 +43,7 @@ class BaseCalculationExpression(models.Model):
         self.ensure_one()
         return " OR ".join(self.rule_ids.mapped("name"))
 
+    @api.depends("rule_ids")
     def _compute_expression_name(self):
         """Compute expression name"""
         for rec in self:
