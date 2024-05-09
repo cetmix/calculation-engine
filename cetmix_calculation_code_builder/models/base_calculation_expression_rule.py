@@ -70,6 +70,10 @@ class BaseCalculationExpressionRule(models.Model):
             return f"'{condition.value}' in {condition.variable_id.name}"
         elif condition.condition == "not_like":
             return f"'{condition.value}' not in {condition.variable_id.name}"
+        elif condition.condition == "in":
+            values_list = [value.strip() for value in condition.value.split(",")]
+            values_str = ", ".join([f"'{value}'" for value in values_list])
+            return f"{condition.variable_id.name} in [{values_str}]"
         elif condition.condition in CONDITION:
             operator_string = condition.condition
             return f"{condition.variable_id.name} {operator_string} '{condition.value}'"
