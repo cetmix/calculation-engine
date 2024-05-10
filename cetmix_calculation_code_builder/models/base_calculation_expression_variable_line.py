@@ -15,7 +15,7 @@ class BaseCalculationExpressionVariableLine(models.Model):
         related="variable_id.name", index=True, store=True, readonly=True
     )
     is_digit = fields.Boolean(
-        related="variable_id.is_digit", index=True, store=True, readonly=True
+        related="variable_id.is_digit", index=True, store=True, readonly=False
     )
     value = fields.Char(
         groups="base.group_system",

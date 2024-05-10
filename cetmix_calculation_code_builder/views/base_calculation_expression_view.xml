@@ -90,6 +90,12 @@
                             style="margin-right: 1rem;"
                         />
                         <field name="variable_id" nolabel="1" />
+                        <label
+                            for="is_digit"
+                            string="Digit"
+                            style="margin-right: 1rem;"
+                        />
+                        <field name="is_digit" nolabel="1" />
                         <field name="condition" nolabel="1" />
                         <field name="value" nolabel="1" />
                     </div>

@@ -82,7 +82,7 @@ class BaseCalculationExpressionRule(models.Model):
                 elif condition.condition == "not_like":
                     return f"({values_str}) not in {condition.variable_id.name}"
                 elif condition.condition == "in":
-                    return f"{condition.variable_id.name} in [{values_str}]"
+                    return f"{condition.variable_id.name} in ({values_str})"
             elif condition.condition in CONDITION:
                 operator_string = condition.condition
                 if condition.variable_id.is_digit:

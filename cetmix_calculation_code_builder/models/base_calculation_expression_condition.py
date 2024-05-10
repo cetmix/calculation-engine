@@ -23,6 +23,9 @@ class BaseCalculationExpressionCondition(models.Model):
     variable_id = fields.Many2one(
         "base.calculation.variable", ondelete="cascade", required=True
     )
+    is_digit = fields.Boolean(
+        related="variable_id.is_digit", index=True, store=True, readonly=False
+    )
     value = fields.Char(string="Search text (optional)")
     condition = fields.Selection(
         [
@@ -51,10 +54,7 @@ class BaseCalculationExpressionCondition(models.Model):
                     values_str = ", ".join([str(float(value)) for value in values_list])
                 else:
                     values_str = ", ".join([f"'{value}'" for value in values_list])
-                if condition == "is in":
-                    return f"{variable_name} {condition} [{values_str}]"
-                else:
-                    return f"{variable_name} {condition} ({values_str})"
+                return f"{variable_name} {condition} ({values_str})"
             else:
                 if self.variable_id.is_digit:
                     contains = str(float(self.value))

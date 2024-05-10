@@ -8,5 +8,5 @@ class BaseCalculationVariableLine(models.Model):
     _inherit = "base.calculation.variable.line"
 
     is_digit = fields.Boolean(
-        related="variable_id.is_digit", index=True, store=True, readonly=True
+        related="variable_id.is_digit", index=True, store=True, readonly=False
     )

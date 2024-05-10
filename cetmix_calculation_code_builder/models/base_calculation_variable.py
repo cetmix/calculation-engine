@@ -7,4 +7,8 @@ from odoo import fields, models
 class BaseCalculationVariable(models.Model):
     _inherit = "base.calculation.variable"
 
-    is_digit = fields.Boolean(string="Digital")
+    is_digit = fields.Boolean(
+        string="Digit",
+        help="Set this field to True if the variable represents"
+        " a numeric value, such as an integer or float.",
+    )

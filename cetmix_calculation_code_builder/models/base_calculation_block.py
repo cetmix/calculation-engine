@@ -24,9 +24,10 @@ class BaseCalculationBlock(models.Model):
     # Ex: RESULT["final_price"] = SALE_TOTAL * discount_multiplier\n\n\n\n"""
 
     use_expressions = fields.Boolean(
+        string="Expression Builder",
         help="This checkbox allows you to build calculations directly from the UI "
         "without needing to write Python code. It utilizes Expression Blocks, "
-        "which are automatically converted into Python code."
+        "which are automatically converted into Python code.",
     )
     expression_ids = fields.One2many(
         comodel_name="base.calculation.expression", inverse_name="calculation_block_id"

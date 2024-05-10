@@ -1,6 +1,8 @@
 # Copyright (C) 2024 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0).
 
+import re
+
 from odoo import api, fields, models
 
 
@@ -55,6 +57,78 @@ class BaseCalculationExpression(models.Model):
         for rec in self:
             rec.rule_ids._compute_rule_name()
 
+    def get_variable_value(self, variable_value):
+        """Return a modified variable value.
+
+        Args:
+            variable_value (str): The variable value to be modified.
+
+        Returns:
+            str: The modified variable value with
+            certain parts enclosed in single quotes.
+
+        """
+        # Get variables
+        variables = self.env["base.calculation.variable.line"].search(
+            [
+                "|",
+                ("calculation_id", "in", self.calculation_block_id.calculation_ids.ids),
+                ("calculation_id", "=", False),
+            ]
+        )
+
+        # Define a set of keys that should not be enclosed in single quotes
+        special_keys = {
+            "uid",
+            "user",
+            "time",
+            "datetime",
+            "dateutil",
+            "timezone",
+            "float_compare",
+            "b64encode",
+            "b64decode",
+            "Command",
+            "env",
+            "model",
+            "Warning",
+            "UserError",
+            "records",
+            "log",
+            "RESULT",
+        }
+
+        # Construct regex pattern for splitting based on operators
+        operators = [
+            "+",
+            "-",
+            "*",
+            "/",
+            "**",
+            "//",
+            "%",
+        ]
+        operator_pattern = "|".join(re.escape(op) for op in operators)
+        parts = re.split(f"({operator_pattern})", variable_value)
+
+        # Check each part if it's a variable name, operator, number, or special key
+        for i, part in enumerate(parts):
+            # Check if the part is an operator or number
+            if part.strip() in operators or part.strip().isdigit():
+                continue
+            # Check if the part is a special key
+            elif part.strip() in special_keys:
+                continue
+            # Check if the part is a variable name
+            elif part.strip() in [variable.variable_name for variable in variables]:
+                continue
+            else:
+                # Wrap it in single quotes
+                parts[i] = f" '{part.strip()}'"
+
+        # Join the parts back together into a single string
+        return "".join(parts)
+
     def get_expression_builder_result(self):
         """
         Get the result of the expression builder.
@@ -68,8 +142,9 @@ class BaseCalculationExpression(models.Model):
             if expression.variable_line_ids:
                 expression_result += expression.rule_ids.generate_if_cases()
                 for variable_line in expression.variable_line_ids:
+                    variable_value = self.get_variable_value(variable_line.value)
                     expression_result += (
-                        f"\t{variable_line.variable_name} = {variable_line.value}\n"
+                        f"\t{variable_line.variable_name} = {variable_value}\n"
                     )
             variables_result_names.extend(
                 [variable.name for variable in expression.variable_ids]
