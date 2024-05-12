@@ -36,8 +36,11 @@ class BaseCalculationExpressionCondition(models.Model):
             ("<", "is less than"),
             ("<=", "is less than or equal to"),
             ("in", "in"),
+            ("not_in", "not in"),
             ("like", "contains"),
             ("not_like", "doesn't contain"),
+            ("is_set", "is set"),
+            ("is_not_set", "is not set"),
         ],
         required=True,
         default="=",
@@ -48,13 +51,17 @@ class BaseCalculationExpressionCondition(models.Model):
         try:
             variable_name = self.variable_id.name
             condition = CONDITION.get(self.condition)
-            if condition in ["is in", "contains", "doesn't contain"]:
+            if condition in ["is in", "not in", "contains", "doesn't contain"]:
                 values_list = [value.strip() for value in self.value.split(",")]
                 if self.variable_id.is_digit:
                     values_str = ", ".join([str(float(value)) for value in values_list])
                 else:
                     values_str = ", ".join([f"'{value}'" for value in values_list])
                 return f"{variable_name} {condition} ({values_str})"
+            elif condition == "is not set":
+                return f"{variable_name} {condition}"
+            elif condition == "is set":
+                return f"{variable_name} {condition}"
             else:
                 if self.variable_id.is_digit:
                     contains = str(float(self.value))

@@ -77,9 +77,15 @@ Expression form:
 
       -  in
 
+      -  not in
+
       -  contains
 
       -  doesn't contain
+
+      -  set
+
+      -  is not set
 
 Usage
 =====

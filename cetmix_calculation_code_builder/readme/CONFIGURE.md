@@ -20,5 +20,8 @@ Following fields are available in the condition line:
         - <
         - <=
         - in
+        - not in
         - contains
         - doesn't contain
+        - set
+        - is not set
