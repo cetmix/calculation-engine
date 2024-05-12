@@ -71,17 +71,22 @@ class BaseCalculationExpressionRule(models.Model):
             str: The string representation of the condition.
         """
         try:
-            if condition.condition in ["like", "not_like", "in", "not_in"]:
+            if condition.condition in ["like", "not_like"]:
+                if condition.variable_id.is_digit:
+                    value_str = str(float(condition.value))
+                else:
+                    value_str = f"'{condition.value}'"
+                if condition.condition == "like":
+                    return f"{value_str} in {condition.variable_id.name}"
+                elif condition.condition == "not_like":
+                    return f"{value_str} not in {condition.variable_id.name}"
+            elif condition.condition in ["in", "not_in"]:
                 values_list = [value.strip() for value in condition.value.split(",")]
                 if condition.variable_id.is_digit:
                     values_str = ", ".join([str(float(value)) for value in values_list])
                 else:
                     values_str = ", ".join([f"'{value}'" for value in values_list])
-                if condition.condition == "like":
-                    return f"({values_str}) in {condition.variable_id.name}"
-                elif condition.condition == "not_like":
-                    return f"({values_str}) not in {condition.variable_id.name}"
-                elif condition.condition == "in":
+                if condition.condition == "in":
                     return f"{condition.variable_id.name} in ({values_str})"
                 elif condition.condition == "not_in":
                     return f"{condition.variable_id.name} not in ({values_str})"

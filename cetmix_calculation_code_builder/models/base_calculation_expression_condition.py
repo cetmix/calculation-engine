@@ -51,7 +51,13 @@ class BaseCalculationExpressionCondition(models.Model):
         try:
             variable_name = self.variable_id.name
             condition = CONDITION.get(self.condition)
-            if condition in ["is in", "not in", "contains", "doesn't contain"]:
+            if condition in ["contains", "doesn't contain"]:
+                if self.variable_id.is_digit:
+                    contains = str(float(self.value))
+                else:
+                    contains = f"'{self.value}'"
+                return f"{variable_name} {condition} {contains}"
+            elif condition in ["is in", "not in"]:
                 values_list = [value.strip() for value in self.value.split(",")]
                 if self.variable_id.is_digit:
                     values_str = ", ".join([str(float(value)) for value in values_list])
