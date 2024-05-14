@@ -28,14 +28,13 @@ class BaseCalculationRefMixin(models.AbstractModel):
     @api.constrains("reference")
     def _check_reference_format(self):
         for record in self:
-            if record.reference:
-                if not re.match(r"^[A-Z0-9_]+$", record.reference):
-                    raise ValidationError(
-                        _(
-                            "Reference must contain only capital letters, "
-                            "numbers, and underscores."
-                        )
+            if record.reference and not re.match(r"^[A-Z0-9_]+$", record.reference):
+                raise ValidationError(
+                    _(
+                        "Reference must contain only capital letters, "
+                        "numbers, and underscores."
                     )
+                )
 
     def _get_reference_pattern(self):
         """
