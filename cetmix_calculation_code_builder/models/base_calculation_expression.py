@@ -129,6 +129,9 @@ class BaseCalculationExpression(models.Model):
         # Join the parts back together into a single string
         return "".join(parts)
 
+    def get_result_as_variables(self):
+        return "for key, value in RESULT.items():\n\tlocals()[key] = value\n"
+
     def get_expression_builder_result(self):
         """
         Get the result of the expression builder.
@@ -140,6 +143,7 @@ class BaseCalculationExpression(models.Model):
         variables_result_names = []
         for expression in self:
             if expression.variable_line_ids:
+                expression_result += self.get_result_as_variables()
                 expression_result += expression.rule_ids.generate_if_cases()
                 for variable_line in expression.variable_line_ids:
                     variable_value = self.get_variable_value(variable_line.value)
