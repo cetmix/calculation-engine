@@ -22,9 +22,7 @@ class BaseCalculationExpression(models.Model):
     rule_ids = fields.One2many(
         comodel_name="base.calculation.expression.rule", inverse_name="expression_id"
     )
-    calculation_block_id = fields.Many2one(
-        "base.calculation.block", ondelete="cascade", required=True
-    )
+    calculation_block_id = fields.Many2one("base.calculation.block", ondelete="cascade")
     variable_line_ids = fields.One2many(
         string="Variables",
         comodel_name="base.calculation.expression.variable.line",
@@ -38,6 +36,11 @@ class BaseCalculationExpression(models.Model):
         column2="variable_id",
         required=True,
         string="Add Variables to Result",
+    )
+    calculation_line_id = fields.Many2one(
+        "base.calculation.line",
+        string="Related Base Calculation Line",
+        ondelete="cascade",
     )
 
     def _prepare_expression_name(self):
@@ -160,3 +163,24 @@ class BaseCalculationExpression(models.Model):
             ]
         )
         return expression_result
+
+    def get_expression_builder_condition(self):
+        """
+        Constructs and returns a condition string based
+        on the rules and conditions of the expressions.
+
+        Returns:
+            str: The result of the expression builder.
+        """
+        self.ensure_one()
+        condition_string_rule = ""
+        for rule in self.rule_ids:
+            if condition_string_rule:
+                condition_string_rule += " or "
+            condition_string = ""
+            for condition in rule.condition_ids:
+                if condition_string:
+                    condition_string += " and "
+                condition_string += rule.get_condition_string(condition)
+            condition_string_rule += f"({condition_string})"
+        return condition_string_rule

@@ -17,6 +17,20 @@
             >
                 <field name="is_digit" />
             </xpath>
+            <xpath
+                expr="//field[@name='line_ids']/tree/field[@name='condition']"
+                position="after"
+            >
+                <field name="expression_ids" invisible="1" />
+                <button
+                    type="object"
+                    name="action_show_expression_builder_condition"
+                    icon="fa-ellipsis-h"
+                    width="0.1"
+                    title="Build Condition with Expression builder"
+                />
+            </xpath>
+
         </field>
     </record>
 </odoo>

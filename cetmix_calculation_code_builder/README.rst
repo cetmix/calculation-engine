@@ -87,6 +87,11 @@ Expression form:
 
       -  is not set
 
+To design a block usage condition using expression builder:
+
+-  Click on the "..." button in the calculation block list.
+-  Add conditions using expression builder.
+
 Usage
 =====
 

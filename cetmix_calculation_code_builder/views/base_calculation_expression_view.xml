@@ -62,6 +62,60 @@
             </form>
         </field>
     </record>
+    <record id="base_calculation_line_expression_view_form" model="ir.ui.view">
+        <field name="name">base.calculation.line.expression.form</field>
+        <field name="model">base.calculation.expression</field>
+        <field name="priority">1000</field>
+        <field name="arch" type="xml">
+            <form string="Base Calculation Expression">
+                <sheet>
+                    <field name="calculation_line_id" invisible="1" />
+                    <notebook>
+                        <page string="Conditions">
+                            <field name="rule_ids">
+                                <tree>
+                                    <field name="name" />
+                                </tree>
+                            </field>
+                            <group name="help_conditions" string="Search conditions">
+                                <p colspan="2">
+                                    Conditions inside a filter are joined using '
+                                    <b>OR</b>
+                                    ' (e.g '
+                                    <b>
+                                        Condition #1 OR
+                                        Condition #2 .. OR Condition X
+                                    </b>
+                                    ')
+                                </p>
+                                <p colspan="2">
+                                    Expressions within a filter condition are joined
+                                    using '
+                                    <b>AND</b>
+                                    ' (e.g '
+                                    <b>
+                                        Expression #1 AND Expression #2 .. AND
+                                        Expression X
+                                    </b>
+                                    ')
+                                </p>
+                            </group>
+                        </page>
+                    </notebook>
+                    <footer class="oe_edit_only">
+                        <button
+                            string="Confirm"
+                            special="save"
+                            data-hotkey="v"
+                            class="oe_highlight"
+                        />
+                        <button string="Discard" special="cancel" data-hotkey="z" />
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
     <record id="base_calculation_expression_rule_view_form" model="ir.ui.view">
         <field name="name">base.calculation.expression.rule.form</field>
         <field name="model">base.calculation.expression.rule</field>

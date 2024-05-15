@@ -25,3 +25,8 @@ Following fields are available in the condition line:
         - doesn't contain
         - set
         - is not set
+
+To design a block usage condition using expression builder:
+
+- Click on the "..." button in the calculation block list.
+- Add conditions using expression builder.
