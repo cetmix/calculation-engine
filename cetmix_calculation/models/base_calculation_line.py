@@ -2,12 +2,11 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0).
 import re
 from copy import deepcopy
+from types import SimpleNamespace
 
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 from odoo.tools.safe_eval import safe_eval, test_python_expr
-
-from ..tools import AttrDict
 
 
 class BaseCalculationLine(models.Model):
@@ -51,7 +50,7 @@ class BaseCalculationLine(models.Model):
 
         Scans the expression for 'CALCULATUION_BLOCK_REFERENCE.RESULT' patterns,
         retrieves corresponding calculation results, and returns a dictionary
-        mapping each reference to its calculation result wrapped in an AttrDict.
+        mapping each reference to its calculation result wrapped in SimpleNamespace.
 
         Args:
             expr (str): The expression containing 'CALCULATUION_BLOCK_REFERENCE.RESULT'
@@ -59,7 +58,7 @@ class BaseCalculationLine(models.Model):
 
         Returns:
             dict: Each key is a 'CALCULATUION_BLOCK_REFERENCE' from the expression,
-            mapped to an AttrDict containing its 'RESULT'.
+            mapped to a SimpleNamespace containing its 'RESULT'.
         """
         eval_context = {}
 
@@ -77,7 +76,7 @@ class BaseCalculationLine(models.Model):
             # Make a deep copy of 'RESULT' to avoid modifications
             result_dict = deepcopy(variables.get("RESULT", {}))
             result = calculation_line.calculate_line(variables)
-            eval_context[f"{reference}"] = AttrDict({"RESULT": result})
+            eval_context[f"{reference}"] = SimpleNamespace(RESULT=result)
             eval_context["RESULT"] = result_dict
         return eval_context
 

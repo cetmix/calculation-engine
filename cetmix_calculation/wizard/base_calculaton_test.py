@@ -40,7 +40,7 @@ class BaseCalculationTest(models.TransientModel):
     resource_ref = fields.Reference(
         string="Record", selection="_selection_target_model"
     )
-    error_msg = fields.Char("Error Message", readonly=True)
+    error_msg = fields.Char("Error Message", compute="_compute_calculation_test_fields")
     calculation_result = fields.Text(compute="_compute_calculation_test_fields")
     variable_values = fields.Text(compute="_compute_calculation_test_fields")
 
@@ -77,3 +77,4 @@ class BaseCalculationTest(models.TransientModel):
         except (ValueError, SyntaxError) as error:
             self.error_msg = error.args[0]
             self.calculation_result = False
+            self.variable_values = False
