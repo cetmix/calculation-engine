@@ -60,6 +60,23 @@ class BaseCalculationExpression(models.Model):
         for rec in self:
             rec.rule_ids._compute_rule_name()
 
+    def get_variable_lines(self):
+        return self.env["base.calculation.variable.line"].search(
+            [
+                "|",
+                ("calculation_id", "in", self.calculation_block_id.calculation_ids.ids),
+                ("calculation_id", "=", False),
+            ]
+        )
+
+    def is_number(self, value):
+        """Check if a string represents an integer or float."""
+        try:
+            float(value)
+            return True
+        except ValueError:
+            return False
+
     def get_variable_value(self, variable_value):
         """Return a modified variable value.
 
@@ -72,13 +89,7 @@ class BaseCalculationExpression(models.Model):
 
         """
         # Get variables
-        variables = self.env["base.calculation.variable.line"].search(
-            [
-                "|",
-                ("calculation_id", "in", self.calculation_block_id.calculation_ids.ids),
-                ("calculation_id", "=", False),
-            ]
-        )
+        variables = self.get_variable_lines()
 
         # Define a set of keys that should not be enclosed in single quotes
         special_keys = {
@@ -117,7 +128,7 @@ class BaseCalculationExpression(models.Model):
         # Check each part if it's a variable name, operator, number, or special key
         for i, part in enumerate(parts):
             # Check if the part is an operator or number
-            if part.strip() in operators or part.strip().isdigit():
+            if part.strip() in operators or self.is_number(part.strip()):
                 continue
             # Check if the part is a special key
             elif part.strip() in special_keys:
@@ -142,17 +153,27 @@ class BaseCalculationExpression(models.Model):
         Returns:
             str: The result of the expression builder.
         """
-        expression_result = ""
+        expression_result = self.get_result_as_variables()
+        variable_lines = self.get_variable_lines()
+        variables = variable_lines.mapped("variable_id") if variable_lines else False
+
         variables_result_names = []
+        default_variable_names = set()
+        variables_default_value = ""
         for expression in self:
             if expression.variable_line_ids:
-                expression_result += self.get_result_as_variables()
                 expression_result += expression.rule_ids.generate_if_cases()
                 for variable_line in expression.variable_line_ids:
                     variable_value = self.get_variable_value(variable_line.value)
                     expression_result += (
                         f"\t{variable_line.variable_name} = {variable_value}\n"
                     )
+                    if variables and variable_line.variable_id not in variables:
+                        if variable_line.variable_name not in default_variable_names:
+                            default_variable_names.add(variable_line.variable_name)
+                            variables_default_value += (
+                                f"{variable_line.variable_name} = False\n"
+                            )
             variables_result_names.extend(
                 [variable.name for variable in expression.variable_ids]
             )
@@ -162,7 +183,7 @@ class BaseCalculationExpression(models.Model):
                 for variable_name in variables_result_names
             ]
         )
-        return expression_result
+        return variables_default_value + expression_result
 
     def get_expression_builder_condition(self):
         """
