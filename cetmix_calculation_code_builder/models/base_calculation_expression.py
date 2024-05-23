@@ -162,11 +162,13 @@ class BaseCalculationExpression(models.Model):
         variables_default_value = ""
         for expression in self:
             if expression.variable_line_ids:
-                expression_result += expression.rule_ids.generate_if_cases()
+                if_case = expression.rule_ids.generate_if_cases()
+                expression_result += if_case if if_case else ""
                 for variable_line in expression.variable_line_ids:
                     variable_value = self.get_variable_value(variable_line.value)
+                    indent = "\t" if if_case else ""
                     expression_result += (
-                        f"\t{variable_line.variable_name} = {variable_value}\n"
+                        f"{indent}{variable_line.variable_name} = {variable_value}\n"
                     )
                     if variables and variable_line.variable_id not in variables:
                         if variable_line.variable_name not in default_variable_names:

@@ -57,8 +57,7 @@ class BaseCalculationExpressionRule(models.Model):
                     condition_string += " and "
                 condition_string += self.get_condition_string(condition)
             condition_string_rule += f"({condition_string})"
-        if_cases = f"if {condition_string_rule}:\n"
-        return if_cases
+        return f"if {condition_string_rule}:\n" if condition_string_rule else False
 
     def get_condition_string(self, condition):
         """
