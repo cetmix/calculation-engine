@@ -18,7 +18,11 @@ Flexible tool that allows to calculate any value using various Odoo model data
 
 [//]: # (addons)
 
-This part will be replaced when running the oca-gen-addons-table script from OCA/maintainer-tools.
+Available addons
+----------------
+addon | version | maintainers | summary
+--- | --- | --- | ---
+[cetmix_calculation](cetmix_calculation/) | 16.0.1.0.0 |  | Calculate values using various model data
 
 [//]: # (end addons)
 
