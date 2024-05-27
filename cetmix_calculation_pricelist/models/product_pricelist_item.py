@@ -39,8 +39,8 @@ class PricelistItem(models.Model):
 
             initial_values = {
                 "BASE_PRICE": result,
-                "ORDER": order_line,
-                "ORDER_LINE": order_line.order_id if order_line else False,
+                "ORDER": order_line.order_id if order_line else False,
+                "ORDER_LINE": order_line,
                 "CUSTOMER": order_line.order_id.partner_id if order_line else False,
                 "RECIPIENT": order_line.order_id.partner_shipping_id
                 if order_line
@@ -48,7 +48,7 @@ class PricelistItem(models.Model):
                 "PAYER": order_line.order_id.partner_invoice_id
                 if order_line
                 else False,
-                "Surcharge": self.price_surcharge,
+                "SURCHARGE": self.price_surcharge,
             }
 
             result_calculation = self.calculation_id.calculate(self, **initial_values)

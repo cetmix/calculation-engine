@@ -65,7 +65,7 @@ Configuration
 
 -  *PAYER*: The invoice address (partner) for the quotation.
 
--  *Surcharge*: The percentage amount to be added to the option selected
+-  *SURCHARGE*: The percentage amount to be added to the option selected
    in the pricelist *Based on* field
 
 3. Enable Advanced Price Rules
