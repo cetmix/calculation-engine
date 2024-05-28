@@ -137,8 +137,15 @@ class BaseCalculationExpression(models.Model):
             elif part.strip() in [variable.variable_name for variable in variables]:
                 continue
             else:
-                # Wrap it in single quotes
-                parts[i] = f" '{part.strip()}'"
+                # Strip any extra spaces
+                stripped_part = part.strip()
+                # Check if the stripped part is enclosed in double quotes ""
+                if stripped_part.startswith('"') and stripped_part.endswith('"'):
+                    # Remove the double quotes
+                    parts[i] = f"'{stripped_part[1:-1]}'"
+                else:
+                    # For unchanged cases, wrap the stripped part in single quotes
+                    parts[i] = f"'{stripped_part}'"
 
         # Join the parts back together into a single string
         return "".join(parts)
