@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="base_calculation_variable_line_view_tree" model="ir.ui.view">
+        <field name="name">base.calculation.variable.line.view.tree</field>
+        <field name="model">base.calculation.variable.line</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="variable_id" />
+                <field name="value" />
+                <field name="calculation_id" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="base_calculation_variable_line_search_view" model="ir.ui.view">
+        <field name="name">base.calculation.variable.line.view.search</field>
+        <field name="model">base.calculation.variable.line</field>
+        <field name="arch" type="xml">
+            <search string="Base Calculation Variable Line">
+                <field name="variable_id" />
+                <field name="value" />
+                <field name="calculation_id" />
+            </search>
+        </field>
+    </record>
+
+    <record id="action_base_calculation_variable_line" model="ir.actions.act_window">
+        <field name="name">Calculation Variable Values</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">base.calculation.variable.line</field>
+        <field name="view_mode">tree</field>
+        <field name="search_view_id" ref="base_calculation_variable_line_search_view" />
+    </record>
+
+    <menuitem
+        id="menu_base_calculation_variable_line_tree"
+        parent="cetmix_calculation.menu_base_calculation"
+        action="cetmix_calculation.action_base_calculation_variable_line"
+        sequence="3"
+    />
+</odoo>
