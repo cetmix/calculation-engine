@@ -12,3 +12,18 @@ class BaseCalculationVariable(models.Model):
         help="Set this field to True if the variable represents"
         " a numeric value, such as an integer or float.",
     )
+
+    def name_get(self):
+        """
+        Customize the display name.
+
+        If 'note' is set, display 'note (name)'.
+        Otherwise, display 'name'.
+        """
+        result = []
+        for record in self:
+            name = record.name
+            if record.note:
+                name = f"{record.note} ({record.name})"
+            result.append((record.id, name))
+        return result
