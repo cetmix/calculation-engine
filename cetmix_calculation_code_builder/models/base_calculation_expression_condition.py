@@ -49,7 +49,7 @@ class BaseCalculationExpressionCondition(models.Model):
     def _prepare_condition_name(self):
         """Prepare condition name"""
         try:
-            variable_name = self.variable_id.name
+            variable_name = self.variable_id.display_name
             condition = CONDITION.get(self.condition)
             if condition in ["contains", "doesn't contain"]:
                 if self.variable_id.is_digit:
