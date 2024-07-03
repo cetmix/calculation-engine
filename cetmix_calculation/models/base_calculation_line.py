@@ -45,19 +45,19 @@ class BaseCalculationLine(models.Model):
 
     def get_reference_result_context(self, expr, **variables):
         """
-        Resolves 'CALCULATUION_BLOCK_REFERENCE.RESULT'
+        Resolves 'CALCULATION_BLOCK_REFERENCE.RESULT'
         in an expression to actual values.
 
-        Scans the expression for 'CALCULATUION_BLOCK_REFERENCE.RESULT' patterns,
+        Scans the expression for 'CALCULATION_BLOCK_REFERENCE.RESULT' patterns,
         retrieves corresponding calculation results, and returns a dictionary
         mapping each reference to its calculation result wrapped in SimpleNamespace.
 
         Args:
-            expr (str): The expression containing 'CALCULATUION_BLOCK_REFERENCE.RESULT'
+            expr (str): The expression containing 'CALCULATION_BLOCK_REFERENCE.RESULT'
             variables (dict): Available variables and their values for calculations.
 
         Returns:
-            dict: Each key is a 'CALCULATUION_BLOCK_REFERENCE' from the expression,
+            dict: Each key is a 'CALCULATION_BLOCK_REFERENCE' from the expression,
             mapped to a SimpleNamespace containing its 'RESULT'.
         """
         eval_context = {}

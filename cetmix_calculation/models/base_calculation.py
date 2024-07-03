@@ -155,16 +155,11 @@ class BaseCalculation(models.Model):
         global_variables = self.env["base.calculation.variable.line"].search(
             [("calculation_id", "=", False)]
         )
-
-        # Initialize variables dictionary with global variables
-        variables = self.get_variables_dict(global_variables)
-
-        # Fetch and process variables from calculation
-        calculation_variables = self.get_variables_dict(self.variable_line_ids)
-
-        # Update dictionaries
-        variables.update(calculation_variables)
-        variables.update(initial_values)
+        variables = dict(
+            self.get_variables_dict(global_variables),
+            **self.get_variables_dict(self.variable_line_ids),
+            **dict(initial_values),
+        )
         return variables
 
     def calculate(self, records_to_process, **initial_values):
@@ -187,12 +182,12 @@ class BaseCalculation(models.Model):
         variables = self.get_calculation_variables(initial_values)
 
         # Construct evaluation context
-        eval_context = self._get_eval_context(records_to_process)
+        default_eval_context = self._get_eval_context(records_to_process)
 
         # Evaluate expressions for each record
         for record in records_to_process:
             # Evaluate each variable expression in the variables dictionary
-            eval_context["record"] = record
+            eval_context = dict(default_eval_context, record=record)
             evaluated_variables = dict()
             for key, expr in variables.items():
                 try:

@@ -91,11 +91,10 @@ class BaseCalculationRefMixin(models.AbstractModel):
         for vals in vals_list:
             reference = vals.get("reference", False)
             if not reference:
-                vals.update(
-                    {"reference": self._auto_correct_reference(vals.get("name"))}
-                )
-            if reference and not self._reference_is_valid(reference):
-                vals.update({"reference": self._auto_correct_reference(reference)})
+                reference = self._auto_correct_reference(vals.get("name"))
+            elif not self._reference_is_valid(reference):
+                reference = self._auto_correct_reference(reference)
+            vals.update({"reference": reference})
         return super().create(vals_list)
 
     def write(self, vals):
@@ -111,9 +110,10 @@ class BaseCalculationRefMixin(models.AbstractModel):
         """
         reference = vals.get("reference", False)
         if not reference:
-            vals.update({"reference": self._auto_correct_reference(self.name)})
-        if reference and not self._reference_is_valid(reference):
-            vals.update({"reference": self._auto_correct_reference(reference)})
+            reference = self._auto_correct_reference(self.name)
+        elif not self._reference_is_valid(reference):
+            reference = self._auto_correct_reference(reference)
+        vals.update({"reference": reference})
         return super().write(vals)
 
     def _get_copied_name(self):
