@@ -41,7 +41,7 @@ Built-in variables
 Following global and built-in variables are accessible from any expression:
 
 `RESULT`: dictionary with values. Holds the current result of the Calculation process as it is available at the moment of the expression evaluation.
-You can also get the RESULT as it is available at the the particular Calculation Block output. Those values are accessible using CALCULATUION_BLOCK_REFERENCE.RESULT
+You can also get the RESULT as it is available at the the particular Calculation Block output. Those values are accessible using CALCULATION_BLOCK_REFERENCE.RESULT
 
 You must take care of which values are being stored there. In case of any value incompatibility and exception will be raised.
 
