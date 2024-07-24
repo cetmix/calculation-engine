@@ -1,0 +1,1 @@
+This module can be used for sophisticated pricing strategies to manage complex discount structures and improve margin control. It also can helps dynamically adjusts prices based on customer profiles, order volumes, and promotions.

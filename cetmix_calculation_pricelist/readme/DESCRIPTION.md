@@ -1,0 +1,1 @@
+This module implements a connection between the *cetmix_calculation* module and Odoo pricelists to compute margins and discounts in sales orders in a more sophisticated manner. We use the *base_calculation* entity to aggregate properties of various other entities for margin evaluation.
