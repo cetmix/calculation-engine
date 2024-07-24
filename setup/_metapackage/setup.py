@@ -9,6 +9,7 @@ setuptools.setup(
     version=version,
     install_requires=[
         'odoo-addon-cetmix_calculation>=16.0dev,<16.1dev',
+        'odoo-addon-cetmix_calculation_pricelist>=16.0dev,<16.1dev',
     ],
     classifiers=[
         'Programming Language :: Python',

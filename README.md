@@ -23,6 +23,7 @@ Available addons
 addon | version | maintainers | summary
 --- | --- | --- | ---
 [cetmix_calculation](cetmix_calculation/) | 16.0.1.0.0 |  | Calculate values using various model data
+[cetmix_calculation_pricelist](cetmix_calculation_pricelist/) | 16.0.1.0.0 |  | This module implements connection between cetmix_calculation module and Odoo pricelists
 
 [//]: # (end addons)
 
