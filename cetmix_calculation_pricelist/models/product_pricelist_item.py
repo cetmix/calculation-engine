@@ -45,7 +45,7 @@ class PricelistItem(models.Model):
                 raise ValidationError(
                     _(
                         f"The RESULT Key 'PRICE_TOTAL' is not assigned in the "
-                        f"calculation with ID: {self.calulation.id} connected to "
+                        f"calculation with ID: {self.calculation_id.id} connected to "
                         f"the Pricelist Item: {self.name}."
                     )
                 )
