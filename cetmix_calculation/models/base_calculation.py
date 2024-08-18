@@ -155,11 +155,15 @@ class BaseCalculation(models.Model):
         global_variables = self.env["base.calculation.variable.line"].search(
             [("calculation_id", "=", False)]
         )
-        variables = dict(
-            self.get_variables_dict(global_variables),
-            **self.get_variables_dict(self.variable_line_ids),
-            **dict(initial_values),
-        )
+        # Initialize variables dictionary with global variables
+        variables = self.get_variables_dict(global_variables)
+
+        # Fetch and process variables from calculation
+        calculation_variables = self.get_variables_dict(self.variable_line_ids)
+
+        # Update dictionaries
+        variables.update(calculation_variables)
+        variables.update(initial_values)
         return variables
 
     def calculate(self, records_to_process, **initial_values):
