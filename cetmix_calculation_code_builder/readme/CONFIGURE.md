@@ -13,18 +13,18 @@ Add a new expression in the list. Following fields are available in the Expressi
 Following fields are available in the condition line:
     - Variable: Variable to check.
     - Condition:
-        - =
-        - !=
-        - >
-        - >=
-        - <
-        - <=
-        - in
-        - not in
-        - contains
-        - doesn't contain
-        - set
-        - is not set
+        - "="
+        - "!="
+        - ">"
+        - ">="
+        - "<"
+        - "<="
+        - "in"
+        - "not in"
+        - "contains"
+        - "doesn't contain"
+        - "set"
+        - "is not set"
 
 To design a block usage condition using expression builder:
 

@@ -5,6 +5,8 @@ import re
 
 from odoo import api, fields, models
 
+from .utils import is_number
+
 
 class BaseCalculationExpression(models.Model):
     _name = "base.calculation.expression"
@@ -69,14 +71,6 @@ class BaseCalculationExpression(models.Model):
             ]
         )
 
-    def is_number(self, value):
-        """Check if a string represents an integer or float."""
-        try:
-            float(value)
-            return True
-        except ValueError:
-            return False
-
     def get_variable_value(self, variable_value):
         """Return a modified variable value.
 
@@ -128,7 +122,7 @@ class BaseCalculationExpression(models.Model):
         # Check each part if it's a variable name, operator, number, or special key
         for i, part in enumerate(parts):
             # Check if the part is an operator or number
-            if part.strip() in operators or self.is_number(part.strip()):
+            if part.strip() in operators or is_number(part.strip()):
                 continue
             # Check if the part is a special key
             elif part.strip() in special_keys:

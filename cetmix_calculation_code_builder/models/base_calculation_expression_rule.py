@@ -8,6 +8,7 @@ from odoo import api, fields, models
 from .states import (
     CONDITION,
 )
+from .utils import inline_and, inline_or
 
 _logger = logging.getLogger(__name__)
 
@@ -47,16 +48,15 @@ class BaseCalculationExpressionRule(models.Model):
         Returns:
             str: The generated if cases.
         """
-        condition_string_rule = ""
+        condition_string_rules = []
         for rule in self:
-            if condition_string_rule:
-                condition_string_rule += " or "
-            condition_string = ""
-            for condition in rule.condition_ids:
-                if condition_string:
-                    condition_string += " and "
-                condition_string += self.get_condition_string(condition)
-            condition_string_rule += f"({condition_string})"
+            condition_strings = [
+                self.get_condition_string(condition) for condition in rule.condition_ids
+            ]
+            condition_string = inline_and(condition_strings)
+            condition_string_rules.append(f"({condition_string})")
+
+        condition_string_rule = inline_or(condition_string_rules)
         return f"if {condition_string_rule}:\n" if condition_string_rule else False
 
     def get_condition_string(self, condition):

@@ -3,7 +3,7 @@
 
 import logging
 
-from odoo import fields, models
+from odoo import api, fields, models
 
 from .states import (
     CONDITION,
@@ -15,6 +15,10 @@ _logger = logging.getLogger(__name__)
 class BaseCalculationExpressionCondition(models.Model):
     _name = "base.calculation.expression.condition"
     _description = "Base Calculation Expression Conditions"
+
+    @api.model
+    def _get_conditions(self):
+        return list(CONDITION.items())
 
     name = fields.Char(string="Conditions", compute="_compute_condition_name")
     rule_id = fields.Many2one(
@@ -28,22 +32,9 @@ class BaseCalculationExpressionCondition(models.Model):
     )
     value = fields.Char(string="Search text (optional)")
     condition = fields.Selection(
-        [
-            ("==", "is equal to"),
-            ("!=", "is not equal to"),
-            (">", "is greater than"),
-            (">=", "is greater than or equal to"),
-            ("<", "is less than"),
-            ("<=", "is less than or equal to"),
-            ("in", "in"),
-            ("not_in", "not in"),
-            ("like", "contains"),
-            ("not_like", "doesn't contain"),
-            ("is_set", "is set"),
-            ("is_not_set", "is not set"),
-        ],
+        selection=_get_conditions,
         required=True,
-        default="=",
+        default="==",
     )
 
     def _prepare_condition_name(self):
@@ -64,9 +55,7 @@ class BaseCalculationExpressionCondition(models.Model):
                 else:
                     values_str = ", ".join([f"'{value}'" for value in values_list])
                 return f"{variable_name} {condition} ({values_str})"
-            elif condition == "is not set":
-                return f"{variable_name} {condition}"
-            elif condition == "is set":
+            elif condition in ["is set", "is not set"]:
                 return f"{variable_name} {condition}"
             else:
                 if self.variable_id.is_digit:
