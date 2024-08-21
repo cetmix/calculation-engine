@@ -28,6 +28,10 @@ class TestCetmixCalculationPricelist(BaseCommon):
             {
                 "name": "Test Caclulation Block 1",
                 "reference": "TEST_CALCULATION_BLOCK",
+            }
+        )
+        cls.calculation_block_1.write(
+            {
                 "expression": """RESULT["PRICE_TOTAL"] = 45.0""",
             }
         )
