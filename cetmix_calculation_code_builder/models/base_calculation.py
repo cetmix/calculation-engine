@@ -20,5 +20,5 @@ class BaseCalculation(models.Model):
             dict: Evaluation context
         """
         result = super()._get_eval_context(records=records)
-        result["locals"] = locals
+        result["locals"] = locals  # the locals() built-in method
         return result

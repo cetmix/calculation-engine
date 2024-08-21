@@ -84,6 +84,7 @@ class BaseCalculationExpression(models.Model):
         """
         # Get variables
         variables = self.get_variable_lines()
+        variable_names = {variable.variable_name for variable in variables}
 
         # Define a set of keys that should not be enclosed in single quotes
         special_keys = {
@@ -117,76 +118,31 @@ class BaseCalculationExpression(models.Model):
             "%",
         ]
         operator_pattern = "|".join(re.escape(op) for op in operators)
-        parts = re.split(f"({operator_pattern})", variable_value)
+        parts = [p.strip() for p in re.split(f"({operator_pattern})", variable_value)]
 
         # Check each part if it's a variable name, operator, number, or special key
         for i, part in enumerate(parts):
-            # Check if the part is an operator or number
-            if part.strip() in operators or is_number(part.strip()):
+            # Skip processing for operator, number, special key or variable name
+            if (
+                part in operators
+                or is_number(part)
+                or part in special_keys
+                or part in variable_names
+            ):
                 continue
-            # Check if the part is a special key
-            elif part.strip() in special_keys:
-                continue
-            # Check if the part is a variable name
-            elif part.strip() in [variable.variable_name for variable in variables]:
-                continue
+            # Check if the stripped part is enclosed in double quotes ""
+            if part.startswith('"') and part.endswith('"'):
+                # Remove the double quotes
+                parts[i] = f"'{part[1:-1]}'"
             else:
-                # Strip any extra spaces
-                stripped_part = part.strip()
-                # Check if the stripped part is enclosed in double quotes ""
-                if stripped_part.startswith('"') and stripped_part.endswith('"'):
-                    # Remove the double quotes
-                    parts[i] = f"'{stripped_part[1:-1]}'"
-                else:
-                    # For unchanged cases, wrap the stripped part in single quotes
-                    parts[i] = f"'{stripped_part}'"
+                # For unchanged cases, wrap the stripped part in single quotes
+                parts[i] = f"'{part}'"
 
         # Join the parts back together into a single string
         return "".join(parts)
 
     def get_result_as_variables(self):
         return "for key, value in RESULT.items():\n\tlocals()[key] = value\n"
-
-    def get_expression_builder_result(self):
-        """
-        Get the result of the expression builder.
-
-        Returns:
-            str: The result of the expression builder.
-        """
-        expression_result = self.get_result_as_variables()
-        variable_lines = self.get_variable_lines()
-        variables = variable_lines.mapped("variable_id") if variable_lines else False
-
-        variables_result_names = []
-        default_variable_names = set()
-        variables_default_value = ""
-        for expression in self:
-            if expression.variable_line_ids:
-                if_case = expression.rule_ids.generate_if_cases()
-                expression_result += if_case if if_case else ""
-                for variable_line in expression.variable_line_ids:
-                    variable_value = self.get_variable_value(variable_line.value)
-                    indent = "\t" if if_case else ""
-                    expression_result += (
-                        f"{indent}{variable_line.variable_name} = {variable_value}\n"
-                    )
-                    if variables and variable_line.variable_id not in variables:
-                        if variable_line.variable_name not in default_variable_names:
-                            default_variable_names.add(variable_line.variable_name)
-                            variables_default_value += (
-                                f"{variable_line.variable_name} = False\n"
-                            )
-            variables_result_names.extend(
-                [variable.name for variable in expression.variable_ids]
-            )
-        expression_result += "\n".join(
-            [
-                f"RESULT['{variable_name}'] = {variable_name}"
-                for variable_name in variables_result_names
-            ]
-        )
-        return variables_default_value + expression_result
 
     def get_expression_builder_condition(self):
         """
